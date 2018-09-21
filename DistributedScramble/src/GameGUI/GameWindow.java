@@ -1,3 +1,4 @@
+package GameGUI;
 
 
 import java.awt.EventQueue;
