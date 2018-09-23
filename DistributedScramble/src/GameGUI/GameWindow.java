@@ -62,6 +62,7 @@ public class GameWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
