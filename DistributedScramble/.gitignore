@@ -5,3 +5,7 @@
 
 # Log file
 *.log
+
+# README.md files
+
+*.md
