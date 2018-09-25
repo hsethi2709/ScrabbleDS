@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -13,6 +14,7 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.border.MatteBorder;
 import javax.swing.SwingConstants;
 import javax.swing.ListSelectionModel;
@@ -28,7 +30,7 @@ import java.awt.event.ActionEvent;
 
 public class GameWindow {
 
-	private JFrame frame;
+	protected JFrame frame;
 	private JTable table;
 	private JTextField textField;
 	private JTextField textField_1;
@@ -113,6 +115,13 @@ public class GameWindow {
 		));
 		table.setBounds(10, 11, 577, 336);
 		frame.getContentPane().add(table);
+		
+		JTextField jtf = new JTextField();
+	    jtf.setDocument(new LimitedPlainDocument(1));
+	    for (int i = 0; i < table.getColumnCount(); i++) {
+	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
+	    }
+
 		
 		//DefaultTableModel tm = (DefaultTableModel)table.getModel();
 		
@@ -342,3 +351,25 @@ public class GameWindow {
 	   theTable.addMouseListener(tableMouseListener);
 	}
 }
+
+
+@SuppressWarnings("serial")
+class LimitedPlainDocument extends javax.swing.text.PlainDocument {
+	  private int maxLen = -1;
+	  /** Creates a new instance of LimitedPlainDocument */     
+	  public LimitedPlainDocument() {}
+	  public LimitedPlainDocument(int maxLen) { this.maxLen = maxLen; }
+	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
+	    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
+	      java.awt.Toolkit.getDefaultToolkit().beep();
+	      return;
+	    }
+	    else if(!str.matches("[A-Za-z]"))
+	    {
+	    	java.awt.Toolkit.getDefaultToolkit().beep();
+	    	JOptionPane.showMessageDialog(new GameWindow().frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	    	return;
+	    }
+	    super.insertString(param, str, attributeSet);
+	  }
+	}
