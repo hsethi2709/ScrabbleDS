@@ -277,6 +277,24 @@ public class GameWindow {
 		btnFreeze.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnFreeze.setBounds(630, 343, 134, 23);
 		frame.getContentPane().add(btnFreeze);
+		
+		JButton btnStartGame = new JButton("Start Game");
+		btnStartGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnStartGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		btnStartGame.setBounds(154, 481, 89, 23);
+		frame.getContentPane().add(btnStartGame);
+		
+		JButton btnEndGame = new JButton("End Game");
+		btnEndGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnEndGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		btnEndGame.setBounds(381, 481, 89, 23);
+		frame.getContentPane().add(btnEndGame);
 	}
 	
 	

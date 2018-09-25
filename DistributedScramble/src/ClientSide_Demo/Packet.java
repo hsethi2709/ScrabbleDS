@@ -1,4 +1,4 @@
-package ClientSide;
+package ClientSide_Demo;
 
 public class Packet<Content> {
 

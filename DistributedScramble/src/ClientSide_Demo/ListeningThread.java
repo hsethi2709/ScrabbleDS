@@ -1,4 +1,4 @@
-package ClientSide;
+package ClientSide_Demo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
