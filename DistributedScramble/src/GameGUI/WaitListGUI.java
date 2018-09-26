@@ -20,7 +20,7 @@ public class WaitListGUI {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public void main(String args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -36,6 +36,7 @@ public class WaitListGUI {
 	/**
 	 * Create the application.
 	 */
+	
 	public WaitListGUI() {
 		initialize();
 	}
@@ -45,7 +46,7 @@ public class WaitListGUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 299, 463);
+		frame.setBounds(100, 100, 299, 484);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -70,6 +71,8 @@ public class WaitListGUI {
 		JButton btnCreateGame = new JButton("Create Game");
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				new GameWindow().main(null);;
+				frame.setVisible(false);
 			}
 		});
 		btnCreateGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -82,7 +85,17 @@ public class WaitListGUI {
 			}
 		});
 		btnLogout.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnLogout.setBounds(54, 351, 165, 23);
+		btnLogout.setBounds(54, 398, 165, 23);
 		frame.getContentPane().add(btnLogout);
+		
+		JButton btnJoinGame = new JButton("Join Game");
+		btnJoinGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnJoinGame.setEnabled(false);
+		btnJoinGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		btnJoinGame.setBounds(54, 351, 165, 23);
+		frame.getContentPane().add(btnJoinGame);
 	}
 }
