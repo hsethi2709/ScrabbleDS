@@ -16,16 +16,17 @@ import java.awt.event.ActionEvent;
 public class WaitListGUI {
 
 	private JFrame frame;
-
+	private JList<String> list;
+	
 	/**
 	 * Launch the application.
 	 */
 	public void main(String args) {
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					WaitListGUI window = new WaitListGUI();
-					window.frame.setVisible(true);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,6 +46,7 @@ public class WaitListGUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 299, 484);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,17 +58,16 @@ public class WaitListGUI {
 		lblPlayersConnected.setBounds(54, 11, 165, 30);
 		frame.getContentPane().add(lblPlayersConnected);
 		
-        DefaultListModel<String> listPlayer = new DefaultListModel<>();
-        listPlayer.addElement("Player_1");
-        listPlayer.addElement("Player_2");
-        listPlayer.addElement("Player_3");
-        listPlayer.addElement("Player_4");
-        listPlayer.addElement("Player_5");
         
-		JList<String> list = new JList<String>(listPlayer);
+        
+		DefaultListModel<String>listPlayer = new DefaultListModel<>();
+		
+		list = new JList<String>(listPlayer);
+		
 		list.setBorder(new LineBorder(new Color(0, 0, 0)));
 		list.setBounds(54, 52, 165, 240);
 		frame.getContentPane().add(list);
+		
 		
 		JButton btnCreateGame = new JButton("Create Game");
 		btnCreateGame.addActionListener(new ActionListener() {
@@ -98,4 +99,21 @@ public class WaitListGUI {
 		btnJoinGame.setBounds(54, 351, 165, 23);
 		frame.getContentPane().add(btnJoinGame);
 	}
+	
+	public void updateGUI(String[] wait_list)
+	{
+		DefaultListModel<String> listPlayer=(DefaultListModel<String>) list.getModel();
+		
+		listPlayer.removeAllElements();
+		System.out.println("Inside GUI"+wait_list[0]);
+		for(String item:wait_list) {
+			
+        	listPlayer.addElement(item);
+        	
+        	}
+		
+	
+		
+
+		}
 }
