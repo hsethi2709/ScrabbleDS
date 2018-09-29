@@ -1,4 +1,4 @@
-package GameGUI;
+package ClientSide_Demo;
 
 
 
@@ -20,9 +20,6 @@ import javax.swing.border.LineBorder;
 
 import com.google.gson.Gson;
 
-
-import ClientSide_Demo.ListeningThread;
-import ClientSide_Demo.Packet;
 import Protocol.Login;
 
 import javax.swing.JTextField;
