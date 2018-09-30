@@ -1,7 +1,5 @@
 package ClientSide_Demo;
 
-import GameGUI.WaitListGUI;
-
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -17,28 +15,32 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.JTextField;
 
 import com.google.gson.Gson;
+import Protocol.Login;
 
-import Protocol.*;
-import javax.swing.JTextField;
 
 public class Client {
     private static String ip = ""; 		//"localhost";
 	private static String usrnm = "";		
     private static int port = 0;		//3000;
-    private static Gson gson = new Gson();
-    private JFrame frame;
+    
+    private Gson gson;
+    private static JFrame frame;
+    
     private JTextField textField;
     private JTextField textField_1;
     private JTextField textField_2;
+    
+    private BufferedWriter out;
 
     public static void main(String[] args) {
     	EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Client window = new Client();
-					window.frame.setVisible(true);
+					new Client();
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -47,6 +49,7 @@ public class Client {
     }
     
     public Client() {
+		gson=new Gson();			 
     	initialize();
     }
     
@@ -80,38 +83,30 @@ public class Client {
 		
 		JButton btnConnect = new JButton("Connect");
 		
-		//if(!textField.getText().equals("") && !textField_1.getText().equals("") && !textField_2.getText().equals(""))
-			//btnConnect.setEnabled(true);
-		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				port = Integer.parseInt(textField.getText().trim());
-				ip = textField_1.getText().trim();
-				usrnm = textField.getText().trim();
-
-		        try (Socket socket = new Socket(ip, port);) {
-		            ListeningThread listeningThread = new ListeningThread(socket);
-		            listeningThread.start();
-		            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-		            Packet<Login> outPacket = new Packet<Login>("Login", new Login(usrnm));
-		            out.write(gson.toJson(outPacket) + "\n");
-		            out.flush();
-		            Thread.sleep(1000);
-		            listeningThread.close();
-		            socket.close();
-		        }
-		        catch(UnknownHostException uexp) {
-		        	System.out.println(uexp);
-		        }
-		        catch(IOException ioexp) {
-		        	System.out.println(ioexp);
-		        }
-		        catch(InterruptedException iexp) {
-		        	System.out.println(iexp);
-		        }
-		        
-		        new WaitListGUI().main(usrnm);;
-		        frame.setVisible(false);
+				try {
+					ip = textField_1.getText().trim();
+					port = Integer.parseInt(textField.getText().trim());
+					usrnm = textField_2.getText().trim();
+					
+					Socket socket=new Socket(ip, port);														//Socket Connection
+					ListeningThread listeningThread = new ListeningThread(socket);							//Calling Listening Thread
+			        listeningThread.start();
+			            
+			        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(usrnm));
+			        out.write(gson.toJson(outPacket) + "\n");
+			        out.flush();    
+					} catch (NumberFormatException e1) {
+						e1.printStackTrace();
+					} catch (UnknownHostException e1) {
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					
+					frame.setVisible(false);				  
 			}
 		});
 		btnConnect.setBorder(new LineBorder(new Color(0, 0, 0), 2));

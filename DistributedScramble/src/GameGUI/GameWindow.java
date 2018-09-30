@@ -36,10 +36,18 @@ public class GameWindow {
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
+	private JTextField score_p1;
+	private JTextField score_p2;
+	private JTextField score_p3;
+	private JTextField score_p4;
+	
+	private static int s_p1 = 0;
+	private static int s_p2 = 0;
+	private static int s_p3 = 0;
+	private static int s_p4 = 0;
+	private int c = 0;
+	
+	private JList<String> list_gw;
 
 	/**
 	 * Launch the application.
@@ -48,8 +56,7 @@ public class GameWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GameWindow window = new GameWindow();
-					window.frame.setVisible(true);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -68,6 +75,7 @@ public class GameWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 823, 576);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,15 +131,59 @@ public class GameWindow {
 	    }
 
 		
-		//DefaultTableModel tm = (DefaultTableModel)table.getModel();
-		
-		JButton btnClearTable = new JButton("Clear Table");
+		JButton btnClearTable = new JButton("Reset Game");
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//tm.getDataVector().removeAllElements();
-				//table.repaint();
-				//tm.fireTableDataChanged();
+				if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
+				else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
+				else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
+				else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!");
+				else
+					JOptionPane.showMessageDialog(new GameWindow().frame,"No Score!!!");
+				
+				table.setModel(new DefaultTableModel(
+						new Object[][] {
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+						},
+						new String[] {
+							"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
+							"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
+						}));
+				
+				s_p1 = 0;
+				s_p2 = 0;
+				s_p3 = 0;
+				s_p4 = 0;
+				
+				score_p1.setText("");
+				score_p2.setText("");
+				score_p3.setText("");
+				score_p4.setText("");
 			}
 		});
 		btnClearTable.setBounds(630, 445, 134, 24);
@@ -200,18 +252,12 @@ public class GameWindow {
 		lblWaitlist.setBounds(630, 11, 134, 24);
 		frame.getContentPane().add(lblWaitlist);
 		
-        DefaultListModel<String> listPlayer = new DefaultListModel<>();
-        listPlayer.addElement("Player_1");
-        listPlayer.addElement("Player_2");
-        listPlayer.addElement("Player_3");
-        listPlayer.addElement("Player_4");
-        listPlayer.addElement("Player_5");
-		
-		JList<String> list_1 = new JList<String>(listPlayer);
+        DefaultListModel<String> listPlayer_gw = new DefaultListModel<>();						// Player List
+		list_gw = new JList<String>(listPlayer_gw);
 
-		list_1.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		list_1.setBounds(630, 46, 134, 219);
-		frame.getContentPane().add(list_1);
+		list_gw.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		list_gw.setBounds(630, 46, 134, 219);
+		frame.getContentPane().add(list_gw);
 		
 		JButton btnInvite = new JButton("Invite");
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -229,29 +275,29 @@ public class GameWindow {
 		lblScore.setBounds(10, 427, 64, 20);
 		frame.getContentPane().add(lblScore);
 		
-		textField_4 = new JTextField();
-		textField_4.setEditable(false);
-		textField_4.setBounds(102, 427, 86, 20);
-		frame.getContentPane().add(textField_4);
-		textField_4.setColumns(10);
+		score_p1 = new JTextField();
+		score_p1.setEditable(false);
+		score_p1.setBounds(102, 427, 86, 20);
+		frame.getContentPane().add(score_p1);
+		score_p1.setColumns(10);
 		
-		textField_5 = new JTextField();
-		textField_5.setEditable(false);
-		textField_5.setBounds(214, 427, 86, 20);
-		frame.getContentPane().add(textField_5);
-		textField_5.setColumns(10);
+		score_p2 = new JTextField();
+		score_p2.setEditable(false);
+		score_p2.setBounds(214, 427, 86, 20);
+		frame.getContentPane().add(score_p2);
+		score_p2.setColumns(10);
 		
-		textField_6 = new JTextField();
-		textField_6.setEditable(false);
-		textField_6.setBounds(328, 427, 86, 20);
-		frame.getContentPane().add(textField_6);
-		textField_6.setColumns(10);
+		score_p3 = new JTextField();
+		score_p3.setEditable(false);
+		score_p3.setBounds(328, 427, 86, 20);
+		frame.getContentPane().add(score_p3);
+		score_p3.setColumns(10);
 		
-		textField_7 = new JTextField();
-		textField_7.setEditable(false);
-		textField_7.setBounds(439, 427, 86, 20);
-		frame.getContentPane().add(textField_7);
-		textField_7.setColumns(10);
+		score_p4 = new JTextField();
+		score_p4.setEditable(false);
+		score_p4.setBounds(439, 427, 86, 20);
+		frame.getContentPane().add(score_p4);
+		score_p4.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("Name:");
 		lblNewLabel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -281,15 +327,26 @@ public class GameWindow {
 		JButton btnFreeze = new JButton("Freeze");
 		btnFreeze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				table.setEnabled(false);			
 			}
 		});
 		btnFreeze.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnFreeze.setBounds(630, 343, 134, 23);
 		frame.getContentPane().add(btnFreeze);
 		
+		JButton btnUnfreeze = new JButton("Unfreeze");
+		btnUnfreeze.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				table.setEnabled(true);
+			}
+		});
+		btnUnfreeze.setBorder(new LineBorder(new Color(0,0,0),2));
+		btnUnfreeze.setBounds(630, 484, 134, 20);
+		frame.getContentPane().add(btnUnfreeze);
+		
 		JButton btnStartGame = new JButton("Start Game");
 		btnStartGame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		btnStartGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -299,6 +356,14 @@ public class GameWindow {
 		JButton btnEndGame = new JButton("End Game");
 		btnEndGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
+				else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
+				else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
+				else
+					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!"); 
 			}
 		});
 		btnEndGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -306,6 +371,15 @@ public class GameWindow {
 		frame.getContentPane().add(btnEndGame);
 	}
 	
+	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
+		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
+		
+		listPlayer_gw.removeAllElements();
+		System.out.println("Inside GUI: " + wait_list[0]);
+		for(String item:wait_list) {
+        	listPlayer_gw.addElement(item);
+        }
+	}
 	
 	JTable theTable = new JTable();									//your table
 	boolean pressingCTRL=false;										//flag, if pressing CTRL it is true, otherwise it is false.
@@ -349,6 +423,52 @@ public class GameWindow {
 	   };
 	   theTable.addKeyListener(tableKeyListener);
 	   theTable.addMouseListener(tableMouseListener);
+	   
+		int rc1 = table.getSelectionModel().getMaxSelectionIndex();
+		int rc2 = table.getSelectionModel().getMinSelectionIndex();
+		int cc1 = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
+		int cc2 = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
+		
+		int rs = rc1-rc2;
+        int cs = cc1-cc2; 
+           
+        if(rs > 0) {
+        	c = 0;
+        	for(int i=rc2; i<=rc1; i++) 
+        		if(table.getValueAt(i, cc1) == null) {
+        			c = 1;
+        			break;
+        		}
+        	    if(c == 0) {
+        	    	s_p1 = s_p1+(rs+1);
+        	    	score_p1.setText(Integer.toString(s_p1));
+        	    }
+
+        	   else
+        		   JOptionPane.showMessageDialog(new GameWindow().frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+         }
+           
+         else if(cs > 0) {
+        	 c = 0;
+        	 for(int j=cc2; j<=cc1; j++)
+        		 if(table.getValueAt(rc1, j) == null) {
+        			c = 1;
+        			break;
+        		 }
+	         if(c == 0) {
+	        	 s_p1 = s_p1+(cs+1);
+        		 score_p1.setText(Integer.toString(s_p1));      		   
+	         }
+
+	         else
+	        	 JOptionPane.showMessageDialog(new GameWindow().frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+           
+           else if(table.getValueAt(rc2, cc2) != null)
+        	   JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+           
+           else
+        	   JOptionPane.showMessageDialog(new GameWindow().frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
 }
 
@@ -362,6 +482,7 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {
 	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
 	    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
 	      java.awt.Toolkit.getDefaultToolkit().beep();
+		  JOptionPane.showMessageDialog(new GameWindow().frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	      return;
 	    }
 	    else if(!str.matches("[A-Za-z]"))

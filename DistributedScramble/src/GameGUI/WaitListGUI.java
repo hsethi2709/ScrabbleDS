@@ -1,22 +1,23 @@
 package GameGUI;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+
+import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class WaitListGUI {
 
 	private JFrame frame;
-
+	private JList<String> list_wl;
+	GameWindow gw;
 	/**
 	 * Launch the application.
 	 */
@@ -24,8 +25,7 @@ public class WaitListGUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					WaitListGUI window = new WaitListGUI();
-					window.frame.setVisible(true);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -56,22 +56,18 @@ public class WaitListGUI {
 		lblPlayersConnected.setBounds(54, 11, 165, 30);
 		frame.getContentPane().add(lblPlayersConnected);
 		
-        DefaultListModel<String> listPlayer = new DefaultListModel<>();
-        listPlayer.addElement("Player_1");
-        listPlayer.addElement("Player_2");
-        listPlayer.addElement("Player_3");
-        listPlayer.addElement("Player_4");
-        listPlayer.addElement("Player_5");
-        
-		JList<String> list = new JList<String>(listPlayer);
-		list.setBorder(new LineBorder(new Color(0, 0, 0)));
-		list.setBounds(54, 52, 165, 240);
-		frame.getContentPane().add(list);
+        DefaultListModel<String> listPlayer_wl = new DefaultListModel<>();				//Waiting player list
+		list_wl = new JList<String>(listPlayer_wl);
 		
-		JButton btnCreateGame = new JButton("Create Game");
+		list_wl.setBorder(new LineBorder(new Color(0, 0, 0)));
+		list_wl.setBounds(54, 52, 165, 240);
+		frame.getContentPane().add(list_wl);
+		
+		JButton btnCreateGame = new JButton("Create Game");								//Creating game
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GameWindow().main(null);;
+				gw = new GameWindow();
+				gw.main(null);
 				frame.setVisible(false);
 			}
 		});
@@ -82,6 +78,7 @@ public class WaitListGUI {
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 			}
 		});
 		btnLogout.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -97,5 +94,15 @@ public class WaitListGUI {
 		btnJoinGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnJoinGame.setBounds(54, 351, 165, 23);
 		frame.getContentPane().add(btnJoinGame);
+	}
+	
+	public void updateWlGUI(String[] wait_list)	{													//Updating waiting player list
+		DefaultListModel<String> listPlayer_wl=(DefaultListModel<String>) list_wl.getModel();
+		
+		listPlayer_wl.removeAllElements();
+		System.out.println("Inside GUI: " + wait_list[0]);
+		for(String item:wait_list) {
+        	listPlayer_wl.addElement(item);
+        }
 	}
 }
