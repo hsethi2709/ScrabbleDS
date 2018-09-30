@@ -1,3 +1,15 @@
+/******************************************************************************
+ *  Dependencies: gson-2.8.5.jar (third-party library) 
+ *                Protocol Package
+ *                ServeClientThread.java
+ *
+ *  The main thread of ServerSide programs. 
+ *  It initializes Server socket, keeps listening to client's connection and creates threads for each incoming connection.
+ *  It also implements several broadcasting functions like broadcasting waitingList.
+ *  It keeps clientThreads by ConcurrentHashMap. It also keeps waitingList and gameList.
+ *  
+ ******************************************************************************/
+
 package ServerSide;
 
 import java.io.IOException;
@@ -5,6 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -13,20 +27,22 @@ import java.util.concurrent.Executors;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import Protocol.WaitingList;
+import Protocol.*;
 
 public class Server {
 
-    private int port;
-    private ConcurrentHashMap<String, ServeClientThread> threadMap;
-    private ServerSocket listeningSocket;
-    private ArrayList<String> waitingList;
-
+    private int port;   // Server listening port, parsed by cmdLineArgs.Class
+    private ConcurrentHashMap<String, ServeClientThread> threadMap; // HashMap takes player's username and corresponding Thread as key value pair.
+    private ServerSocket listeningSocket;   // The server socket bounded to specified port indicated above.
+    private List<String> waitingList;  // The list keeps usernames of players who are waiting to play.
+    private List<String> gameList;  // The list keeps usernames of players who are waiting to play.
+    
     public Server(int port) throws IOException {
+        this.port = port;
         listeningSocket = new ServerSocket(port);
         threadMap = new ConcurrentHashMap<String, ServeClientThread>();
-        this.port = port;
-        waitingList = new ArrayList<String>();
+        waitingList = Collections.synchronizedList(new ArrayList<String>());
+        gameList = Collections.synchronizedList(new ArrayList<String>());
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -72,14 +88,25 @@ public class Server {
             t.send(new Packet<WaitingList>("WaitingList", new WaitingList(list)));
         }
     }
+    
+    public void broadcastGameList() {
+        String[] list = gameList.toArray(new String[0]);
+        for (ServeClientThread t : threadMap.values()) {
+            t.send(new Packet<GameList>("GameList", new GameList(list)));
+        }
+    }
 
-    public void register(String username, ServeClientThread thread) {
+    public synchronized void registerToWaiting(String username, ServeClientThread thread) {
         threadMap.put(username, thread);
         waitingList.add(username);
     }
+    
+    public synchronized void registerToGame(String username) {
+        gameList.add(username);
+    }
 
     public static void main(String[] args) {
-        int port = 3000;
+        int port = 0;
         CmdLineArgs argsBean = new CmdLineArgs();
         CmdLineParser parser = new CmdLineParser(argsBean);
         try {
@@ -99,6 +126,5 @@ public class Server {
         } catch (IOException e) {
             System.out.println("Server Socket cannot be created");
         }
-
     }
 }
