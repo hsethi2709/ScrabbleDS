@@ -21,6 +21,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -40,6 +41,7 @@ public class GameWindow {
 	private JTextField score_p2;
 	private JTextField score_p3;
 	private JTextField score_p4;
+	private ArrayList<JTextField> textfield_array;
 	
 	private static int s_p1 = 0;
 	private static int s_p2 = 0;
@@ -245,6 +247,12 @@ public class GameWindow {
 		frame.getContentPane().add(textField_3);
 		textField_3.setColumns(10);
 		
+		textfield_array=new ArrayList<JTextField>();
+		textfield_array.add(textField);
+		textfield_array.add(textField_1);
+		textfield_array.add(textField_2);
+		textfield_array.add(textField_3);
+		
 		JLabel lblWaitlist = new JLabel("Waitlist");
 		lblWaitlist.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblWaitlist.setHorizontalAlignment(SwingConstants.CENTER);
@@ -371,6 +379,8 @@ public class GameWindow {
 		frame.getContentPane().add(btnEndGame);
 	}
 	
+	
+	
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
 		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
 		
@@ -470,7 +480,17 @@ public class GameWindow {
            else
         	   JOptionPane.showMessageDialog(new GameWindow().frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
+	
+	// Updating the Game List into the TextField's
+	
+	public void updateGameList(String[] game_list) {
+		for (int i=0;i<game_list.length;i++) {
+			textfield_array.get(i).setText(game_list[i]);
+		}
+	}
+	
 }
+
 
 
 @SuppressWarnings("serial")

@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
-import Protocol.Login;
 
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
@@ -20,27 +19,20 @@ import java.awt.EventQueue;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 
 public class WaitListGUI {
 
 	private JFrame frame;
-<<<<<<< HEAD
 	private JList<String> list_wl;
-	private JButton btnCreateGame;
 	GameWindow gw;
-	private Gson gson;
 	BufferedWriter send_message;
-=======
-	private JList<String> list;
-	
->>>>>>> refs/remotes/origin/harshit
+	Gson gson;
+	JButton btnCreateGame;
 	/**
 	 * Launch the application.
 	 */
 	public void main(String args) {
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -57,16 +49,15 @@ public class WaitListGUI {
 	 */
 	
 	public WaitListGUI(BufferedWriter out) {
-		initialize();
-		send_message=out;
 		gson=new Gson();
+		send_message=out;
+		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 299, 484);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,34 +69,16 @@ public class WaitListGUI {
 		lblPlayersConnected.setBounds(54, 11, 165, 30);
 		frame.getContentPane().add(lblPlayersConnected);
 		
-<<<<<<< HEAD
         DefaultListModel<String> listPlayer_wl = new DefaultListModel<>();				//Waiting player list
 		list_wl = new JList<String>(listPlayer_wl);
-=======
-        
-        
-		DefaultListModel<String>listPlayer = new DefaultListModel<>();
 		
-		list = new JList<String>(listPlayer);
-		
-		list.setBorder(new LineBorder(new Color(0, 0, 0)));
-		list.setBounds(54, 52, 165, 240);
-		frame.getContentPane().add(list);
->>>>>>> refs/remotes/origin/harshit
-		
-<<<<<<< HEAD
 		list_wl.setBorder(new LineBorder(new Color(0, 0, 0)));
 		list_wl.setBounds(54, 52, 165, 240);
 		frame.getContentPane().add(list_wl);
 		
 		btnCreateGame = new JButton("Create Game");								//Creating game
-=======
-		
-		JButton btnCreateGame = new JButton("Create Game");
->>>>>>> refs/remotes/origin/harshit
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
 		        Packet<GameList> outPacket = new Packet<GameList>("CreateGame", null);
 		        try {
 					send_message.write(gson.toJson(outPacket) + "\n");
@@ -117,6 +90,9 @@ public class WaitListGUI {
 		        
 				
 				frame.setVisible(false);
+
+
+
 			}
 		});
 		btnCreateGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -126,7 +102,6 @@ public class WaitListGUI {
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
 
 			}
 		});
@@ -145,7 +120,6 @@ public class WaitListGUI {
 		frame.getContentPane().add(btnJoinGame);
 	}
 	
-<<<<<<< HEAD
 	public void updateWlGUI(String[] wait_list)	{													//Updating waiting player list
 		DefaultListModel<String> listPlayer_wl=(DefaultListModel<String>) list_wl.getModel();
 		
@@ -156,27 +130,9 @@ public class WaitListGUI {
         }
 	}
 	
-	public void disableCreateButton()
+
+public void disableCreateButton()
 	{
 		btnCreateGame.setEnabled(false);
 	}
 }
-=======
-	public void updateGUI(String[] wait_list)
-	{
-		DefaultListModel<String> listPlayer=(DefaultListModel<String>) list.getModel();
-		
-		listPlayer.removeAllElements();
-		System.out.println("Inside GUI"+wait_list[0]);
-		for(String item:wait_list) {
-			
-        	listPlayer.addElement(item);
-        	
-        	}
-		
-	
-		
-
-		}
-}
->>>>>>> refs/remotes/origin/harshit
