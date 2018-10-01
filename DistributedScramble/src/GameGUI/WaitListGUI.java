@@ -29,6 +29,7 @@ public class WaitListGUI {
 	BufferedWriter send_message;
 	Gson gson;
 	JButton btnCreateGame;
+	private String username;
 	/**
 	 * Launch the application.
 	 */
@@ -48,10 +49,11 @@ public class WaitListGUI {
 	 * Create the application.
 	 */
 	
-	public WaitListGUI(BufferedWriter out) {
+	public WaitListGUI(BufferedWriter out,String username) {
 		gson=new Gson();
 		send_message=out;
 		initialize();
+		this.username=username;
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class WaitListGUI {
 		btnCreateGame = new JButton("Create Game");								//Creating game
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-		        Packet<GameList> outPacket = new Packet<GameList>("CreateGame", null);
+		        Packet<GameList> outPacket = new Packet<GameList>("CreateGame",null,username);
 		        try {
 					send_message.write(gson.toJson(outPacket) + "\n");
 					send_message.flush();  

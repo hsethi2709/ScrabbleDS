@@ -87,15 +87,17 @@ public class Server {
         String[] list = waitingList.toArray(new String[0]);
 
         for (ServeClientThread t : threadMap.values()) {
-            t.send(new Packet<WaitingList>("WaitingList", new WaitingList(list)));
+            t.send(new Packet<WaitingList>("WaitingList", new WaitingList(list),"Server"));
         }
     }
     
     public void broadcastGameList() {
         String[] list = gameList.toArray(new String[0]);
         
-        for (ServeClientThread t : threadMap.values()) {
-            t.send(new Packet<GameList>("GameList", new GameList(list)));
+        //for (ServeClientThread t : threadMap.values()) {
+        for (String name: gameList ) {
+        	ServeClientThread t=threadMap.get(name);
+            t.send(new Packet<GameList>("GameList", new GameList(list),"Server"));
         }
     }
 

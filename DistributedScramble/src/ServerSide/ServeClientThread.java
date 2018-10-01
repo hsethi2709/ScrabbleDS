@@ -71,7 +71,7 @@ public class ServeClientThread extends Thread {
                         this.username = loginPacket.getContent().getUsername();
                         server.registerToWaiting(this.username, this);
                         Reply reply = new Reply("Login", true, gameStarted);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
                         server.broadcastWaitingList();
@@ -79,25 +79,26 @@ public class ServeClientThread extends Thread {
                     }
                     case "CreateGame": {
                         Reply reply = new Reply("CreateGame", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
-                        String name = this.username;
+                        
+                        
                         server.updateGameStatus("Yes");
-                        server.registerToGame(name);
+                        server.registerToGame(this.username);
                         server.broadcastGameList();
                         break;
                     }
                     case "Invite": {
                         Reply reply = new Reply("Invite", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
                         break;
                     }
                     case "JoinGame": {
                         Reply reply = new Reply("JoinGame", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
                         server.registerToGame(this.username);
@@ -106,7 +107,7 @@ public class ServeClientThread extends Thread {
                     }
                     case "StartGame": {
                         Reply reply = new Reply("StartGame", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
                         break;
@@ -134,8 +135,14 @@ public class ServeClientThread extends Thread {
             }
         }
     }
+    
+    
 
-    public void send(Packet<?> packet) {
+    public String getUsername() {
+		return username;
+	}
+
+	public void send(Packet<?> packet) {
         try {
             out.write(gson.toJson(packet) + "\n");
             out.flush();

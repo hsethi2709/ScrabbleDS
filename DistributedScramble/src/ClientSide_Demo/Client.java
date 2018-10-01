@@ -92,11 +92,11 @@ public class Client {
 					
 					Socket socket=new Socket(ip, port);														//Socket Connection
 					
-					ListeningThread listeningThread = new ListeningThread(socket);							//Calling Listening Thread
+					ListeningThread listeningThread = new ListeningThread(socket,usrnm);							//Calling Listening Thread
 			        listeningThread.start();
 			            
 			        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(usrnm));
+			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(usrnm),usrnm);
 			        out.write(gson.toJson(outPacket) + "\n");
 			        out.flush();    
 					} catch (NumberFormatException e1) {
