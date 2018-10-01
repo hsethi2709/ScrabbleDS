@@ -32,9 +32,11 @@ public class ListeningThread extends Thread {
         in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream(), "UTF-8"));
         gson = new Gson();
         wl=new WaitListGUI();
-        wl.main("");							 
+        wl.waitGUI();
         flag = true;
     }
+    
+    public ListeningThread() {}
 
     public void run() {
         try {
@@ -75,7 +77,7 @@ public class ListeningThread extends Thread {
         }
     }
 
-    public void close() throws IOException {
+    public void closeSocket() throws IOException {
         flag = false;
         clientSocket.close();
     }
