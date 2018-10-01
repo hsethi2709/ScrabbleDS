@@ -100,6 +100,12 @@ public class Server {
             t.send(new Packet<GameList>("GameList", new GameList(list),"Server"));
         }
     }
+    
+    public void invitePlayers(String[] invitation_list,String invitee) {
+    	for (String name: invitation_list) {
+    		threadMap.get(name).send(new Packet<Invitation>("Invitation", new Invitation(invitee),"Server"));
+    	}
+    }
 
     public synchronized void registerToWaiting(String username, ServeClientThread thread) {
         threadMap.put(username, thread);

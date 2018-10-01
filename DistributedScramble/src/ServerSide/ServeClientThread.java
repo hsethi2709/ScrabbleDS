@@ -89,10 +89,8 @@ public class ServeClientThread extends Thread {
                         break;
                     }
                     case "Invite": {
-                        Reply reply = new Reply("Invite", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
-                        out.write(gson.toJson(outPacket) + "\n");
-                        out.flush();
+                    	Packet<Invite> invite=gson.fromJson(clientJson,new TypeToken<Packet<Invite>>() {}.getType());
+                        server.invitePlayers(invite.getContent().getNames(), invite.getUsername());
                         break;
                     }
                     case "JoinGame": {
@@ -122,9 +120,11 @@ public class ServeClientThread extends Thread {
                     }
                     case "EndGame": {
                     	server.endGame();
+                    	break;
                     }
                     case "Logout": {
                     	server.logOut(this.username);
+                    	break;
                     }
                 }
             }

@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
+import Protocol.Invite;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -22,6 +23,8 @@ import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
@@ -237,10 +240,14 @@ public class GameWindow {
 		list_gw.setBounds(630, 46, 134, 219);
 		frame.getContentPane().add(list_gw);
 		
-		JButton btnInvite = new JButton("Invite");
+		
+		
+		JButton btnInvite = new JButton("Invite");									//Inviting Players to join the game
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnInvite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String[] invite_list=list_gw.getSelectedValuesList().toArray(new String[] {});
+				invitePlayers(invite_list);
 			}
 		});
 		btnInvite.setBounds(653, 286, 89, 23);
@@ -527,6 +534,17 @@ public class GameWindow {
 	}
 	}
 	
+	public void invitePlayers(String[] invitation_list)  				//Sending Invitation List to the Server
+	{
+		try {
+		Packet<Invite> outPacket=new Packet<Invite>("Invite",new Invite(invitation_list),usrnm);
+		out.write(gson.toJson(outPacket)+ "\n");
+		out.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
 	// Updating the Game List into the TextField's
 	
 	public void updateGameList(String[] game_list) {
@@ -549,6 +567,8 @@ public class GameWindow {
 	public void closeGameGUI() {
 		frame.dispose();
 	}
+	
+
 }
 
 

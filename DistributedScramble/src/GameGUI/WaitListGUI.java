@@ -32,6 +32,8 @@ public class WaitListGUI {
 	BufferedWriter send_message;
 	Gson gson;
 	JButton btnCreateGame;
+	JButton btnJoinGame ;
+	
 	private String username;
 	/**
 	 * Launch the application.
@@ -101,9 +103,10 @@ public class WaitListGUI {
 		btnCreateGame.setBounds(54, 317, 165, 23);
 		frame.getContentPane().add(btnCreateGame);
 		
-		JButton btnJoinGame = new JButton("Join Game");
+		btnJoinGame = new JButton("Join Game");
 		btnJoinGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Invitation Accepted");
 			}
 		});
 		btnJoinGame.setEnabled(false);
@@ -159,6 +162,10 @@ public class WaitListGUI {
 		for(String item:wait_list) {
         	listPlayer_wl.addElement(item);
         }
+	}
+	
+	public void enableJoinButton() {
+		btnJoinGame.setEnabled(true);
 	}
 	
 	public void enableCreateButton() {

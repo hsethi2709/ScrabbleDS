@@ -94,6 +94,9 @@ public class ListeningThread extends Thread {
 				else if(header.equals("Logout")) {
 					closeSocket();
 				}
+				else if(header.equals("Invitation")) {
+					wl.enableJoinButton();
+				}
             }
         } catch (Exception e) {
             if (flag) {
