@@ -110,6 +110,21 @@ public class Server {
         gameList.add(username);
     }
     
+    public void endGame() {
+    	for (String name: gameList ) {
+        	ServeClientThread t=threadMap.get(name);
+            t.send(new Packet<GameList>("EndGame", null, "Server"));
+            
+        }
+    	gameList.clear();
+    }
+    
+    public void logOut(String usrnm) {
+    	waitingList.remove(usrnm);
+    	threadMap.get(usrnm).send(new Packet<GameList>("Logout", null, "Server"));
+    	broadcastWaitingList();
+    }
+    
     public void updateGameStatus(String status)
     {
     	gameStarted=status;

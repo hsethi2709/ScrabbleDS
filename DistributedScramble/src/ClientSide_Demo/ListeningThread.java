@@ -24,7 +24,8 @@ public class ListeningThread extends Thread {
     private BufferedWriter out;
     private Gson gson;
     private boolean flag;
-    private String username;
+    @SuppressWarnings("unused")
+	private String username;
     
 	String[] list;
 	JList<String> wait_list;
@@ -37,9 +38,9 @@ public class ListeningThread extends Thread {
         out=new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream(),"UTF-8"));
         gson = new Gson();
 
-        wl=new WaitListGUI(out,username);
-        gw = new GameWindow();
-		this.username=username;
+        wl=new WaitListGUI(out, username);
+        gw = new GameWindow(out, username);
+		this.username = username;
         wl.waitGUI();		 
         flag=true;
 
@@ -80,13 +81,19 @@ public class ListeningThread extends Thread {
                 	list=inPacket.getContent().getList();
                 	System.out.println("Sending GameList: "+ list);
                 	gw.gameGUI();
-                	wl.disableCreateButton(); // disabling the create button once a game is created
-                	gw.updateGameList(list); //sending the game players list to the game window
-                	
-                	
-                	
-                	
+                	wl.disableCreateButton(); 				// disabling the create button once a game is created
+                	gw.updateGameList(list); 				// sending the game players list to the game window
                 }
+                
+				else if(header.equals("EndGame")) {
+					wl.waitGUI();
+					gw.closeGameGUI();
+					wl.enableCreateButton();
+				}
+                
+				else if(header.equals("Logout")) {
+					closeSocket();
+				}
             }
         } catch (Exception e) {
             if (flag) {

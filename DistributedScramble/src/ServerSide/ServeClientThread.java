@@ -82,8 +82,7 @@ public class ServeClientThread extends Thread {
                         Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
-                        
-                        
+
                         server.updateGameStatus("Yes");
                         server.registerToGame(this.username);
                         server.broadcastGameList();
@@ -118,8 +117,14 @@ public class ServeClientThread extends Thread {
                     case "Highlight": {
     
                     }
-                    case "vote": {
+                    case "Vote": {
     
+                    }
+                    case "EndGame": {
+                    	server.endGame();
+                    }
+                    case "Logout": {
+                    	server.logOut(this.username);
                     }
                 }
             }

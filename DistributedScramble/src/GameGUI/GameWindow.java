@@ -6,6 +6,12 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.google.gson.Gson;
+
+import ClientSide_Demo.Packet;
+import Protocol.GameList;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -21,6 +27,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.event.ActionListener;
@@ -49,6 +56,10 @@ public class GameWindow {
 	private static int s_p4 = 0;
 	private int c = 0;
 	
+    private Gson gson;
+	private BufferedWriter out;
+	private String usrnm;
+	
 	private JList<String> list_gw;
 
 	/**
@@ -70,9 +81,15 @@ public class GameWindow {
 	/**
 	 * Create the application.
 	 */
-	public GameWindow() {
+	public GameWindow(BufferedWriter out, String usrnm) {
+		this.out = out;
+		this.usrnm = usrnm;
+		gson = new Gson();
+		
 		initialize();
 	}
+	
+	//public GameWindow() {}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -317,26 +334,41 @@ public class GameWindow {
 		JButton btnEndGame = new JButton("End Game");
 		btnEndGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				winner(s_p1, s_p2, s_p3, s_p4);												//Calling winner function
+				winner(s_p1, s_p2, s_p3, s_p4);												// Calling winner function
+				closeGame();
 			}
 		});
 		btnEndGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnEndGame.setBounds(381, 481, 89, 23);
 		frame.getContentPane().add(btnEndGame);
-	}
+		
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {						// Frame window controls
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		        if (JOptionPane.showConfirmDialog(frame, 
+		            "Are you sure you want to close this window?", "Close Window?", 
+		            JOptionPane.YES_NO_OPTION,
+		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+		            closeGame();															// Calling closeGame() 
+		        }
+		    }
+		});
+	}																						// Close initialize()
 	
 
-	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							//Deciding Winner
+	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							// Deciding Winner
 		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
-			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
+			JOptionPane.showMessageDialog(frame,"Player 1 Wins!!!");
 		else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
-			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
+			JOptionPane.showMessageDialog(frame,"Player 2 Wins!!!");
 		else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
-			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
+			JOptionPane.showMessageDialog(frame,"Player 3 Wins!!!");
 		else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
-			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!");
+			JOptionPane.showMessageDialog(frame,"Player 4 Wins!!!");
 		else
-			JOptionPane.showMessageDialog(new GameWindow().frame,"No Winner!!!");
+			JOptionPane.showMessageDialog(frame,"No Winner!!!");
 	}
 	
 	public void tableInit() {
@@ -464,7 +496,7 @@ public class GameWindow {
         	    }
 
         	   else
-        		   JOptionPane.showMessageDialog(new GameWindow().frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
          else if(cs > 0) {
@@ -479,7 +511,7 @@ public class GameWindow {
         		 score_p1.setText(Integer.toString(s_p1));      		   
 	         }
 	         else
-	        	 JOptionPane.showMessageDialog(new GameWindow().frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
          else if(table.getValueAt(rc2, cc2) != null) {
@@ -488,10 +520,10 @@ public class GameWindow {
   		 	score_p1.setText(Integer.toString(s_p1));
          }
          else
-           JOptionPane.showMessageDialog(new GameWindow().frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+           JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
 	catch(Exception e) {
-		JOptionPane.showMessageDialog(new GameWindow().frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
 	}
 	
@@ -502,8 +534,21 @@ public class GameWindow {
 			textfield_array.get(i).setText(game_list[i]);
 		}
 	}
-
 	
+	public void closeGame() {											// Closing Window
+		
+		try {
+        Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
+        out.write(gson.toJson(outPacket) + "\n");
+        out.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public void closeGameGUI() {
+		frame.dispose();
+	}
 }
 
 
@@ -517,13 +562,13 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {
 	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
 	    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
 	      java.awt.Toolkit.getDefaultToolkit().beep();
-		  JOptionPane.showMessageDialog(new GameWindow().frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	      return;
 	    }
 	    else if(!str.matches("[A-Za-z]"))
 	    {
 	    	java.awt.Toolkit.getDefaultToolkit().beep();
-	    	JOptionPane.showMessageDialog(new GameWindow().frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	    	return;
 	    }
 	    super.insertString(param, str, attributeSet);

@@ -1,7 +1,5 @@
 package GameGUI;
 
-import ClientSide_Demo.ListeningThread;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -13,6 +11,7 @@ import ClientSide_Demo.Packet;
 import Protocol.GameList;
 
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
@@ -95,33 +94,12 @@ public class WaitListGUI {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-		        
-				
 				frame.setVisible(false);
-
-
-
-
 			}
 		});
 		btnCreateGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnCreateGame.setBounds(54, 317, 165, 23);
 		frame.getContentPane().add(btnCreateGame);
-		
-		JButton btnLogout = new JButton("Logout");										//Calling Socket Close
-		btnLogout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ListeningThread lt = new ListeningThread();
-				try {
-					lt.closeSocket();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnLogout.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnLogout.setBounds(54, 398, 165, 23);
-		frame.getContentPane().add(btnLogout);
 		
 		JButton btnJoinGame = new JButton("Join Game");
 		btnJoinGame.addActionListener(new ActionListener() {
@@ -132,8 +110,47 @@ public class WaitListGUI {
 		btnJoinGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnJoinGame.setBounds(54, 351, 165, 23);
 		frame.getContentPane().add(btnJoinGame);
-	}
+		
+		JButton btnLogout = new JButton("Logout");										//Calling Socket Close
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					logOut();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnLogout.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		btnLogout.setBounds(54, 398, 165, 23);
+		frame.getContentPane().add(btnLogout);
+		
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);							// Preventing Frame from Closing abruptly
+		
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {						// Frame window controls
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		        if (JOptionPane.showConfirmDialog(frame, 
+		            "Are you sure you want to close this window?", "Close Window?", 
+		            JOptionPane.YES_NO_OPTION,
+		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+		            logOut();															// Calling closeGame() 
+		        }
+		    }
+		});
+	}																							// Closing Initialize()
 	
+	public void logOut() {
+		try {
+	        Packet<GameList> outPacket = new Packet<GameList>("Logout", null, username);
+	        send_message.write(gson.toJson(outPacket) + "\n");
+	        send_message.flush();
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		frame.dispose();
+	}
 	public void updateWlGUI(String[] wait_list)	{													//Updating waiting player list
 		DefaultListModel<String> listPlayer_wl=(DefaultListModel<String>) list_wl.getModel();
 		
@@ -143,10 +160,12 @@ public class WaitListGUI {
         	listPlayer_wl.addElement(item);
         }
 	}
-
-public void disableCreateButton()
-	{
-		btnCreateGame.setEnabled(false);
+	
+	public void enableCreateButton() {
+		btnCreateGame.setEnabled(true);
 	}
 
+	public void disableCreateButton() {
+		btnCreateGame.setEnabled(false);
+	}
 }
