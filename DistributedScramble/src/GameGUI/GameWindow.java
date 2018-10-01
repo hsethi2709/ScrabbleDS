@@ -375,7 +375,7 @@ public class GameWindow {
 		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
 		
 		listPlayer_gw.removeAllElements();
-		System.out.println("Inside GUI: " + wait_list[0]);
+		System.out.println("Inside Game GUI: " + wait_list[0]);
 		for(String item:wait_list) {
         	listPlayer_gw.addElement(item);
         }

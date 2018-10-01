@@ -91,6 +91,7 @@ public class Client {
 					usrnm = textField_2.getText().trim();
 					
 					Socket socket=new Socket(ip, port);														//Socket Connection
+					
 					ListeningThread listeningThread = new ListeningThread(socket);							//Calling Listening Thread
 			        listeningThread.start();
 			            

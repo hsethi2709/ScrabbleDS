@@ -17,7 +17,9 @@ public class GameStatus {
         this.scores = scores;
         this.nextTurn = nextTurn;
     }
-
+    
+    
+    
     public boolean isOver() {
         return this.isOver;
     }

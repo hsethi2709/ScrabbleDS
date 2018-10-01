@@ -36,6 +36,7 @@ public class Server {
     private ServerSocket listeningSocket;   // The server socket bounded to specified port indicated above.
     private List<String> waitingList;  // The list keeps usernames of players who are waiting to play.
     private List<String> gameList;  // The list keeps usernames of players who are waiting to play.
+    private String gameStarted;
     
     public Server(int port) throws IOException {
         this.port = port;
@@ -43,6 +44,7 @@ public class Server {
         threadMap = new ConcurrentHashMap<String, ServeClientThread>();
         waitingList = Collections.synchronizedList(new ArrayList<String>());
         gameList = Collections.synchronizedList(new ArrayList<String>());
+        gameStarted="No";
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -57,7 +59,7 @@ public class Server {
                 System.out.println("Remote Port: " + clientSocket.getPort());
                 System.out.println("Remote Hostname: " + clientSocket.getInetAddress().getHostName());
                 System.out.println("Local Port: " + clientSocket.getLocalPort());
-                ServeClientThread t = new ServeClientThread(clientSocket, this);
+                ServeClientThread t = new ServeClientThread(clientSocket, this,gameStarted);
                 executor.submit(t);
             }
         } catch (UnsupportedEncodingException e) {
@@ -91,6 +93,7 @@ public class Server {
     
     public void broadcastGameList() {
         String[] list = gameList.toArray(new String[0]);
+        
         for (ServeClientThread t : threadMap.values()) {
             t.send(new Packet<GameList>("GameList", new GameList(list)));
         }
@@ -103,6 +106,11 @@ public class Server {
     
     public synchronized void registerToGame(String username) {
         gameList.add(username);
+    }
+    
+    public void updateGameStatus(String status)
+    {
+    	gameStarted=status;
     }
 
     public static void main(String[] args) {

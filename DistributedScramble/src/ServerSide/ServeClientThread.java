@@ -30,6 +30,7 @@ public class ServeClientThread extends Thread {
     private Gson gson;              // instance of Json parser
     private Server server;
     private String username;
+    private String gameStarted;
 
     /**
      * The constructor of ServeClientThread. Takes client socket and server instance as parameters.
@@ -43,12 +44,13 @@ public class ServeClientThread extends Thread {
      * @throws IOException  throws when getting input and output stream if clientSocket resets unexpectedly. 
      */
     
-    public ServeClientThread(Socket clientSocket, Server server) throws UnsupportedEncodingException, IOException {
+    public ServeClientThread(Socket clientSocket, Server server, String game_started) throws UnsupportedEncodingException, IOException {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
         this.clientSocket = clientSocket;
         gson = new Gson();
         this.server = server;
+        gameStarted=game_started;
     }
 
     public void run() {
@@ -68,7 +70,7 @@ public class ServeClientThread extends Thread {
                         Packet<Login> loginPacket = gson.fromJson(clientJson, new TypeToken<Packet<Login>>() {}.getType());
                         this.username = loginPacket.getContent().getUsername();
                         server.registerToWaiting(this.username, this);
-                        Reply reply = new Reply("Login", true, null);
+                        Reply reply = new Reply("Login", true, gameStarted);
                         Packet<Reply> outPacket= new Packet<Reply>("Reply", reply);
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
@@ -81,7 +83,9 @@ public class ServeClientThread extends Thread {
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
                         String name = this.username;
+                        server.updateGameStatus("Yes");
                         server.registerToGame(name);
+                        server.broadcastGameList();
                         break;
                     }
                     case "Invite": {
@@ -121,12 +125,12 @@ public class ServeClientThread extends Thread {
         } catch (UnsupportedEncodingException e) {
             System.out.println("The Character Encoding is not supported.");
         } catch (IOException e) {
-            System.out.println("The clinet Socket resets unexpectedly.");
+            System.out.println("The client Socket resets unexpectedly.");
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                System.out.println("The clinet Socket cannot be closed correctly.");
+                System.out.println("The client Socket cannot be closed correctly.");
             }
         }
     }
@@ -136,7 +140,7 @@ public class ServeClientThread extends Thread {
             out.write(gson.toJson(packet) + "\n");
             out.flush();
         } catch (IOException e) {
-            System.out.println("The clinet Socket resets unexpectedly.");
+            System.out.println("The client Socket resets unexpectedly.");
         }
     }
 }

@@ -4,6 +4,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+
+import com.google.gson.Gson;
+
+import ClientSide_Demo.Packet;
+import Protocol.GameList;
+import Protocol.Login;
+
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -11,13 +18,19 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 
 public class WaitListGUI {
 
 	private JFrame frame;
 	private JList<String> list_wl;
+	private JButton btnCreateGame;
 	GameWindow gw;
+	private Gson gson;
+	BufferedWriter send_message;
 	/**
 	 * Launch the application.
 	 */
@@ -37,8 +50,10 @@ public class WaitListGUI {
 	 * Create the application.
 	 */
 	
-	public WaitListGUI() {
+	public WaitListGUI(BufferedWriter out) {
 		initialize();
+		send_message=out;
+		gson=new Gson();
 	}
 
 	/**
@@ -63,11 +78,20 @@ public class WaitListGUI {
 		list_wl.setBounds(54, 52, 165, 240);
 		frame.getContentPane().add(list_wl);
 		
-		JButton btnCreateGame = new JButton("Create Game");								//Creating game
+		btnCreateGame = new JButton("Create Game");								//Creating game
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gw = new GameWindow();
-				gw.main(null);
+				
+		        Packet<GameList> outPacket = new Packet<GameList>("CreateGame", null);
+		        try {
+					send_message.write(gson.toJson(outPacket) + "\n");
+					send_message.flush();  
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		        
+				
 				frame.setVisible(false);
 			}
 		});
@@ -78,6 +102,7 @@ public class WaitListGUI {
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 
 			}
 		});
@@ -104,5 +129,10 @@ public class WaitListGUI {
 		for(String item:wait_list) {
         	listPlayer_wl.addElement(item);
         }
+	}
+	
+	public void disableCreateButton()
+	{
+		btnCreateGame.setEnabled(false);
 	}
 }
