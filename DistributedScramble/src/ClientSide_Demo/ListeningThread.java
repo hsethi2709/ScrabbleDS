@@ -40,7 +40,7 @@ public class ListeningThread extends Thread {
         wl=new WaitListGUI(out,username);
         gw = new GameWindow();
 		this.username=username;
-        wl.main("");							 
+        wl.waitGUI();		 
         flag=true;
 
     }
@@ -79,7 +79,7 @@ public class ListeningThread extends Thread {
                 	Packet<GameList> inPacket=gson.fromJson(str, type);
                 	list=inPacket.getContent().getList();
                 	System.out.println("Sending GameList: "+ list);
-                	gw.main(null);
+                	gw.gameGUI();
                 	wl.disableCreateButton(); // disabling the create button once a game is created
                 	gw.updateGameList(list); //sending the game players list to the game window
                 	

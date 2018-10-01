@@ -101,7 +101,7 @@ public class Client {
 					} 
 					
 					try {
-						ListeningThread listeningThread = new ListeningThread(socket);				//Calling Listening Thread
+						ListeningThread listeningThread = new ListeningThread(socket,usrnm);				//Calling Listening Thread
 						listeningThread.start();
 					} catch (NullPointerException e1) {
 						System.out.println("No connection with Server!!!");

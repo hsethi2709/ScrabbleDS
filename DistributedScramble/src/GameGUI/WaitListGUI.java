@@ -18,13 +18,10 @@ import javax.swing.JButton;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Toolkit;
+
 import java.awt.event.ActionListener;
 
 import java.io.BufferedWriter;
-
-import java.awt.event.WindowEvent;
-
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 

@@ -493,7 +493,7 @@ public class GameWindow {
 	catch(Exception e) {
 		JOptionPane.showMessageDialog(new GameWindow().frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
-
+	}
 	
 	// Updating the Game List into the TextField's
 	
