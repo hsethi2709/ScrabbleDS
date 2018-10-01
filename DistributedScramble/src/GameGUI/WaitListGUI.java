@@ -6,6 +6,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+
+import com.google.gson.Gson;
+
+import ClientSide_Demo.Packet;
+import Protocol.GameList;
+
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -14,7 +20,11 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+
+import java.io.BufferedWriter;
+
 import java.awt.event.WindowEvent;
+
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
@@ -23,6 +33,10 @@ public class WaitListGUI {
 	private JFrame frame;
 	private JList<String> list_wl;
 	GameWindow gw;
+	BufferedWriter send_message;
+	Gson gson;
+	JButton btnCreateGame;
+	private String username;
 	/**
 	 * Launch the application.
 	 */
@@ -43,8 +57,11 @@ public class WaitListGUI {
 	 * Create the application.
 	 */
 	
-	public WaitListGUI() {
+	public WaitListGUI(BufferedWriter out,String username) {
+		gson=new Gson();
+		send_message=out;
 		initialize();
+		this.username=username;
 	}
 
 	/**
@@ -69,13 +86,25 @@ public class WaitListGUI {
 		list_wl.setBounds(54, 52, 165, 240);
 		frame.getContentPane().add(list_wl);
 		
-		JButton btnCreateGame = new JButton("Create Game");								//Creating game and disabling
+
+		btnCreateGame = new JButton("Create Game");								//Creating game
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gw = new GameWindow();													//Calling Game GUI
-				gw.gameGUI();
-				frame.setVisible(false);
+		        Packet<GameList> outPacket = new Packet<GameList>("CreateGame",null,username);
+		        try {
+					send_message.write(gson.toJson(outPacket) + "\n");
+					send_message.flush();  
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		        
 				
+				frame.setVisible(false);
+
+
+
+
 			}
 		});
 		btnCreateGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -117,10 +146,10 @@ public class WaitListGUI {
         	listPlayer_wl.addElement(item);
         }
 	}
-	
-	public void closeWindow() {
-		WindowEvent winClose = new WindowEvent(this.frame, WindowEvent.WINDOW_CLOSING);
-		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClose);
+
+public void disableCreateButton()
+	{
+		btnCreateGame.setEnabled(false);
 	}
-	
+
 }

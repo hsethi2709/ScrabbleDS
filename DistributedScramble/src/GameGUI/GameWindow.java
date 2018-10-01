@@ -21,6 +21,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -40,6 +41,7 @@ public class GameWindow {
 	private JTextField score_p2;
 	private JTextField score_p3;
 	private JTextField score_p4;
+	private ArrayList<JTextField> textfield_array;
 	
 	private static int s_p1 = 0;
 	private static int s_p2 = 0;
@@ -198,6 +200,12 @@ public class GameWindow {
 		frame.getContentPane().add(textField_3);
 		textField_3.setColumns(10);
 		
+		textfield_array=new ArrayList<JTextField>();
+		textfield_array.add(textField);
+		textfield_array.add(textField_1);
+		textfield_array.add(textField_2);
+		textfield_array.add(textField_3);
+		
 		JLabel lblWaitlist = new JLabel("Waitlist");
 		lblWaitlist.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblWaitlist.setHorizontalAlignment(SwingConstants.CENTER);
@@ -317,6 +325,7 @@ public class GameWindow {
 		frame.getContentPane().add(btnEndGame);
 	}
 	
+
 	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							//Deciding Winner
 		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
 			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
@@ -376,12 +385,12 @@ public class GameWindow {
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
 
 	}
-	
+
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
 		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
 		
 		listPlayer_gw.removeAllElements();
-		System.out.println("Inside GUI: " + wait_list[0]);
+		System.out.println("Inside Game GUI: " + wait_list[0]);
 		for(String item:wait_list) {
         	listPlayer_gw.addElement(item);
         }
@@ -484,9 +493,19 @@ public class GameWindow {
 	catch(Exception e) {
 		JOptionPane.showMessageDialog(new GameWindow().frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
-	} 
+
+	
+	// Updating the Game List into the TextField's
+	
+	public void updateGameList(String[] game_list) {
+		for (int i=0;i<game_list.length;i++) {
+			textfield_array.get(i).setText(game_list[i]);
+		}
+	}
+
 	
 }
+
 
 
 @SuppressWarnings("serial")

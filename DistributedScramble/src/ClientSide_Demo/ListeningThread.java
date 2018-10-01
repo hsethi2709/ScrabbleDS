@@ -1,8 +1,10 @@
 package ClientSide_Demo;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 import java.lang.reflect.Type;
@@ -19,21 +21,28 @@ public class ListeningThread extends Thread {
 
     private Socket clientSocket;
     private BufferedReader in;
+    private BufferedWriter out;
     private Gson gson;
     private boolean flag;
+    private String username;
     
 	String[] list;
 	JList<String> wait_list;
 	WaitListGUI wl;
 	GameWindow gw;
 	
-    public ListeningThread(Socket clientSocket) throws UnsupportedEncodingException, IOException {
+    public ListeningThread(Socket clientSocket,String username) throws UnsupportedEncodingException, IOException {
         this.clientSocket = clientSocket;
         in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream(), "UTF-8"));
+        out=new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream(),"UTF-8"));
         gson = new Gson();
-        wl=new WaitListGUI();
-        wl.waitGUI();
-        flag = true;
+
+        wl=new WaitListGUI(out,username);
+        gw = new GameWindow();
+		this.username=username;
+        wl.main("");							 
+        flag=true;
+
     }
     
     public ListeningThread() {}
@@ -51,6 +60,9 @@ public class ListeningThread extends Thread {
                     Packet<Reply> inPacket = gson.fromJson(str, type);
                     System.out.println(inPacket.getContent().getType());
                     System.out.println(inPacket.getContent().getResult());
+                    System.out.println(inPacket.getContent().getMessage());
+                    if(inPacket.getContent().getMessage()!=null && inPacket.getContent().getMessage().equals("Yes"))
+                    	wl.disableCreateButton();
                 }
 				
 				else if(header.equals("WaitingList")) {
@@ -59,14 +71,21 @@ public class ListeningThread extends Thread {
                 	list=inPacket.getContent().getList();
                 	System.out.println("Sending List to WaitList: "+ list);
                 	wl.updateWlGUI(list);
+                	gw.updateGwGUI(list);
                 }
                 
 				else if(header.equals("GameList")) {
                 	Type type=new TypeToken<Packet<GameList>>() {}.getType();
                 	Packet<GameList> inPacket=gson.fromJson(str, type);
                 	list=inPacket.getContent().getList();
-                	System.out.println("Sending List to GameList: "+ list);
-                	gw.updateGwGUI(list);
+                	System.out.println("Sending GameList: "+ list);
+                	gw.main(null);
+                	wl.disableCreateButton(); // disabling the create button once a game is created
+                	gw.updateGameList(list); //sending the game players list to the game window
+                	
+                	
+                	
+                	
                 }
             }
         } catch (Exception e) {
