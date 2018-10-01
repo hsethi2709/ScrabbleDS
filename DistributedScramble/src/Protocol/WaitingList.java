@@ -11,6 +11,7 @@ public class WaitingList {
     public String[] getList() {
         return this.waitingList;
     }
+    
 
     public int count() {
         return this.waitingList.length;
