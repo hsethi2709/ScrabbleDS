@@ -52,10 +52,11 @@ public class GameWindow {
 	/**
 	 * Launch the application.
 	 */
-	public void main(String[] args) {
+	public void gameGUI() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					//new GameWindow();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -91,7 +92,7 @@ public class GameWindow {
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setBorder(new LineBorder(Color.GREEN, 2));
 		table.setCellSelectionEnabled(true);
-
+		
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
@@ -126,64 +127,16 @@ public class GameWindow {
 		
 		JTextField jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
-	    for (int i = 0; i < table.getColumnCount(); i++) {
+	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
-	    }
 
-		
+	    
 		JButton btnClearTable = new JButton("Reset Game");
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
-				else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
-				else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
-				else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!");
-				else
-					JOptionPane.showMessageDialog(new GameWindow().frame,"No Score!!!");
-				
-				table.setModel(new DefaultTableModel(
-						new Object[][] {
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-							{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-						},
-						new String[] {
-							"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
-							"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
-						}));
-				
-				s_p1 = 0;
-				s_p2 = 0;
-				s_p3 = 0;
-				s_p4 = 0;
-				
-				score_p1.setText("");
-				score_p2.setText("");
-				score_p3.setText("");
-				score_p4.setText("");
+				winner(s_p1, s_p2, s_p3, s_p4);
+				tableInit();				
 			}
 		});
 		btnClearTable.setBounds(630, 445, 134, 24);
@@ -308,7 +261,7 @@ public class GameWindow {
 		JButton btnNewButton = new JButton("Calculate Score");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				something();
+				tableOperations();
 			}
 		});
 		btnNewButton.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -356,19 +309,72 @@ public class GameWindow {
 		JButton btnEndGame = new JButton("End Game");
 		btnEndGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
-				else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
-				else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
-				else
-					JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!"); 
+				winner(s_p1, s_p2, s_p3, s_p4);												//Calling winner function
 			}
 		});
 		btnEndGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnEndGame.setBounds(381, 481, 89, 23);
 		frame.getContentPane().add(btnEndGame);
+	}
+	
+	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							//Deciding Winner
+		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
+			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 1 Wins!!!");
+		else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
+			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 2 Wins!!!");
+		else if (s_p3 > s_p1 && s_p3 > s_p2 && s_p3 > s_p4)
+			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 3 Wins!!!");
+		else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
+			JOptionPane.showMessageDialog(new GameWindow().frame,"Player 4 Wins!!!");
+		else
+			JOptionPane.showMessageDialog(new GameWindow().frame,"No Winner!!!");
+	}
+	
+	public void tableInit() {
+		table.setModel(new DefaultTableModel(
+				new Object[][] {
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
+				},
+				new String[] {
+					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
+					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
+				}));
+		
+		s_p1 = 0;
+		s_p2 = 0;
+		s_p3 = 0;
+		s_p4 = 0;
+		
+		score_p1.setText("");
+		score_p2.setText("");
+		score_p3.setText("");
+		score_p4.setText("");
+		
+		JTextField jtf = new JTextField();
+	    jtf.setDocument(new LimitedPlainDocument(1));
+	    for (int i = 0; i < table.getColumnCount(); i++)
+	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
+
 	}
 	
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
@@ -381,11 +387,15 @@ public class GameWindow {
         }
 	}
 	
+	
 	JTable theTable = new JTable();									//your table
 	boolean pressingCTRL=false;										//flag, if pressing CTRL it is true, otherwise it is false.
 	Vector<int[]> selectedCells = new Vector<int[]>();				//int[]because every entry will store {cellX,cellY}
 
-	public void something(){										// To Calculate the score as per selected Cells
+	
+	public void tableOperations() {										// To Calculate the score as per selected Cells
+		
+	try {
 	   KeyListener tableKeyListener = new KeyAdapter() {
 
 	      @Override
@@ -440,7 +450,7 @@ public class GameWindow {
         			break;
         		}
         	    if(c == 0) {
-        	    	s_p1 = s_p1+(rs+1);
+        	    	s_p1 = s_p1 + (rs + 1);
         	    	score_p1.setText(Integer.toString(s_p1));
         	    }
 
@@ -455,21 +465,27 @@ public class GameWindow {
         			c = 1;
         			break;
         		 }
-	         if(c == 0) {
-	        	 s_p1 = s_p1+(cs+1);
+	         if(c == 0) {										//Successful selection of correct word
+	        	 s_p1 = s_p1 + (cs + 1);
         		 score_p1.setText(Integer.toString(s_p1));      		   
 	         }
-
 	         else
 	        	 JOptionPane.showMessageDialog(new GameWindow().frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-        }
+         }
            
-           else if(table.getValueAt(rc2, cc2) != null)
-        	   JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-           
-           else
-        	   JOptionPane.showMessageDialog(new GameWindow().frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+         else if(table.getValueAt(rc2, cc2) != null) {
+        	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+           	s_p1 = s_p1 + (cs + 1);
+  		 	score_p1.setText(Integer.toString(s_p1));
+         }
+         else
+           JOptionPane.showMessageDialog(new GameWindow().frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
+	catch(Exception e) {
+		JOptionPane.showMessageDialog(new GameWindow().frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	}
+	} 
+	
 }
 
 
