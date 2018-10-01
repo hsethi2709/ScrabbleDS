@@ -1,5 +1,7 @@
 package GameGUI;
 
+import ClientSide_Demo.ListeningThread;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -16,8 +18,13 @@ import javax.swing.JButton;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+
 import java.io.BufferedWriter;
+
+import java.awt.event.WindowEvent;
+
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
@@ -33,7 +40,8 @@ public class WaitListGUI {
 	/**
 	 * Launch the application.
 	 */
-	public void main(String args) {
+
+	public void waitGUI() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -78,6 +86,7 @@ public class WaitListGUI {
 		list_wl.setBounds(54, 52, 165, 240);
 		frame.getContentPane().add(list_wl);
 		
+
 		btnCreateGame = new JButton("Create Game");								//Creating game
 		btnCreateGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -95,16 +104,22 @@ public class WaitListGUI {
 
 
 
+
 			}
 		});
 		btnCreateGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnCreateGame.setBounds(54, 317, 165, 23);
 		frame.getContentPane().add(btnCreateGame);
 		
-		JButton btnLogout = new JButton("Logout");
+		JButton btnLogout = new JButton("Logout");										//Calling Socket Close
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				ListeningThread lt = new ListeningThread();
+				try {
+					lt.closeSocket();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnLogout.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -131,10 +146,10 @@ public class WaitListGUI {
         	listPlayer_wl.addElement(item);
         }
 	}
-	
 
 public void disableCreateButton()
 	{
 		btnCreateGame.setEnabled(false);
 	}
+
 }

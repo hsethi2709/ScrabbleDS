@@ -28,6 +28,7 @@ public class Client {
     
     private Gson gson;
     private static JFrame frame;
+    private Socket socket;
     
     private JTextField textField;
     private JTextField textField_1;
@@ -90,10 +91,22 @@ public class Client {
 					port = Integer.parseInt(textField.getText().trim());
 					usrnm = textField_2.getText().trim();
 					
-					Socket socket=new Socket(ip, port);														//Socket Connection
+
+					try {
+						socket=new Socket(ip, port);												//Socket Connection
+					} catch (IOException e1) {
+						System.out.println("Server is not listening!!!");
+					} catch (NumberFormatException e1) {
+						System.out.println("Wrong Format entered!!!");
+					} 
 					
-					ListeningThread listeningThread = new ListeningThread(socket,usrnm);							//Calling Listening Thread
-			        listeningThread.start();
+					try {
+						ListeningThread listeningThread = new ListeningThread(socket);				//Calling Listening Thread
+						listeningThread.start();
+					} catch (NullPointerException e1) {
+						System.out.println("No connection with Server!!!");
+					}
+
 			            
 			        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(usrnm),usrnm);
