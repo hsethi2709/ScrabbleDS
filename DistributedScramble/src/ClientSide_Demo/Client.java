@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.JTextField;
@@ -96,6 +97,7 @@ public class Client {
 						socket=new Socket(ip, port);												//Socket Connection
 					} catch (IOException e1) {
 						System.out.println("Server is not listening!!!");
+						JOptionPane.showMessageDialog(frame, "Server is not listening", "Error", 1);
 					} catch (NumberFormatException e1) {
 						System.out.println("Wrong Format entered!!!");
 					} 
