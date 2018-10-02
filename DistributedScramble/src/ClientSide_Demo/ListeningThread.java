@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.Socket;
 
-import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 
@@ -27,8 +26,7 @@ public class ListeningThread extends Thread {
     private BufferedWriter out;
     private Gson gson;
     private boolean flag;
-    @SuppressWarnings("unused")
-	private String username;
+    private String username;
     
 	String[] list;
 	JList<String> wait_list;
