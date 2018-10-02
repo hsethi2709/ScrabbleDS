@@ -68,7 +68,7 @@ public class ListeningThread extends Thread {
                     			closeSocket();
                     			status = false;
                     		}
-                    		else if(s != null && !s.contains("") && s.matches("[A-Za-z0-9]+")) {
+                    		else if(s != null && !s.contains(" ") && s.matches("[A-Za-z0-9]+")) {
             			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(s),s);
             			        out.write(gson.toJson(outPacket) + "\n");
             			        out.flush();
