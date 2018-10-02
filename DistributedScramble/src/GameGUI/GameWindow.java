@@ -24,6 +24,8 @@ import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
@@ -124,6 +126,8 @@ public class GameWindow {
 		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		table.setCellSelectionEnabled(true);
 		table.setEnabled(false);
+		
+		//table.getSelectionModel().addListSelectionListener(new MyListener());		// For only one chance to play
 		
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -639,3 +643,12 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restri
 	    super.insertString(param, str, attributeSet);
 	  }
 	}
+
+class MyListener implements ListSelectionListener {
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+			System.out.println(e.getFirstIndex());
+			JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	}
+}
