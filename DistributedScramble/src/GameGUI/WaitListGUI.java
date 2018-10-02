@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
+import Protocol.Reply;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class WaitListGUI {
 	BufferedWriter send_message;
 	Gson gson;
 	JButton btnCreateGame;
-	JButton btnJoinGame ;
+	JButton btnJoinGame;
 	
 	private String username;
 	/**
@@ -104,15 +105,24 @@ public class WaitListGUI {
 		frame.getContentPane().add(btnCreateGame);
 		
 		btnJoinGame = new JButton("Join Game");
-		btnJoinGame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Invitation Accepted");
-			}
-		});
+		
 		btnJoinGame.setEnabled(false);
 		btnJoinGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnJoinGame.setBounds(54, 351, 165, 23);
 		frame.getContentPane().add(btnJoinGame);
+		btnJoinGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Packet<Reply> outPacket = new Packet<Reply>("JoinGame",null,username);
+		        try {
+					send_message.write(gson.toJson(outPacket) + "\n");
+					send_message.flush();  
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				frame.setVisible(false);
+			}
+		});
 		
 		JButton btnLogout = new JButton("Logout");										//Calling Socket Close
 		btnLogout.addActionListener(new ActionListener() {
@@ -163,6 +173,8 @@ public class WaitListGUI {
         	listPlayer_wl.addElement(item);
         }
 	}
+	
+	
 	
 	public void enableJoinButton() {
 		btnJoinGame.setEnabled(true);
