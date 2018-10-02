@@ -9,8 +9,7 @@ import java.io.UnsupportedEncodingException;
 
 import java.lang.reflect.Type;
 import java.net.Socket;
-
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 
@@ -27,7 +26,6 @@ public class ListeningThread extends Thread {
     private BufferedWriter out;
     private Gson gson;
     private boolean flag;
-    @SuppressWarnings("unused")
 	private String username;
     
 	String[] list;
@@ -40,13 +38,10 @@ public class ListeningThread extends Thread {
         in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream(), "UTF-8"));
         out=new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream(),"UTF-8"));
         gson = new Gson();
-
         wl=new WaitListGUI(out, username);
         gw = new GameWindow(out, username);
-		this.username = username;
-        		 
+		this.username = username; 
         flag=true;
-
     }
     
     public ListeningThread() {}
@@ -68,15 +63,22 @@ public class ListeningThread extends Thread {
                     if(!inPacket.getContent().getResult()) {
                     	Boolean status=true;
                     	while(status) {
-                    		String s=(String)JOptionPane.showInputDialog("Oops! Username is already taken. Please enter a different username");
-                    		if(s!=null) {
+                    		String s = JOptionPane.showInputDialog("Oops! Username is already taken or invalid. Please enter a different username");
+                    		if(s==null) {
+                    			closeSocket();
+                    			status = false;
+                    		}
+                    		else if(s != null && !s.contains("") && s.matches("[A-Za-z0-9]+")) {
             			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(s),s);
             			        out.write(gson.toJson(outPacket) + "\n");
             			        out.flush();
-            			        this.username=s;
-            			        
-            			        status=false;
+            			        this.username = s;
+            			        status = false;
                     		}
+                    		else {
+                    			JOptionPane.showMessageDialog(new JFrame(), "Please enter a valid username. A valid username contains only alphabets and numbers. It should be a minimum of length 1.","Error", 1);
+                    		}
+                    	
                     			
                     	}
                     }
