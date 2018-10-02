@@ -120,7 +120,7 @@ public class Server {
 
     public synchronized Boolean registerToWaiting(String username, ServeClientThread thread) {
 
-    	if(threadMap.containsKey(username) || username == null || username.contains("") || !username.matches("[A-Za-z0-9]+")) {
+    	if(threadMap.containsKey(username) || username == null || username.contains(" ") || !username.matches("[A-Za-z0-9]+")) {
     		return false;
     	}
     	else {
