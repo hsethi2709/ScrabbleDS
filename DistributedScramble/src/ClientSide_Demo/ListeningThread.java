@@ -9,7 +9,9 @@ import java.io.UnsupportedEncodingException;
 
 import java.lang.reflect.Type;
 import java.net.Socket;
+
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,8 +26,7 @@ public class ListeningThread extends Thread {
     private BufferedWriter out;
     private Gson gson;
     private boolean flag;
-    @SuppressWarnings("unused")
-	private String username;
+    private String username;
     
 	String[] list;
 	JList<String> wait_list;
@@ -41,7 +42,7 @@ public class ListeningThread extends Thread {
         wl=new WaitListGUI(out, username);
         gw = new GameWindow(out, username);
 		this.username = username;
-        wl.waitGUI();		 
+        		 
         flag=true;
 
     }
@@ -62,6 +63,23 @@ public class ListeningThread extends Thread {
                     System.out.println(inPacket.getContent().getType());
                     System.out.println(inPacket.getContent().getResult());
                     System.out.println(inPacket.getContent().getMessage());
+                    if(!inPacket.getContent().getResult()) {
+                    	Boolean status=true;
+                    	while(status) {
+                    		String s=(String)JOptionPane.showInputDialog("Oops! Username is already taken. Please enter a different username");
+                    		if(s!=null) {
+            			        Packet<Login> outPacket = new Packet<Login>("Login", new Login(s),s);
+            			        out.write(gson.toJson(outPacket) + "\n");
+            			        out.flush();
+            			        this.username=s;
+            			        
+            			        status=false;
+                    		}
+                    			
+                    	}
+                    }
+                    else if(inPacket.getUsername().equals("Login"))
+                    	wl.waitGUI();
                     if(inPacket.getContent().getMessage()!=null && inPacket.getContent().getMessage().equals("Yes")) {
                     	wl.disableCreateButton();
                     	System.out.println("Disabling Create Button for:"+username);
@@ -110,6 +128,8 @@ public class ListeningThread extends Thread {
 					System.out.println("Enabling Create Button");
 					wl.enableCreateButton();
 					System.out.println("Close Game GUI");
+					wl.disbleJoinButton();
+					
 					gw.closeGameGUI();
 					
 				}

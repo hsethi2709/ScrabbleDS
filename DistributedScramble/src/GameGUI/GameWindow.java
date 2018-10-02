@@ -18,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.Container;
+
 import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -29,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -48,6 +51,7 @@ public class GameWindow {
 	private JTextField score_p2;
 	private JTextField score_p3;
 	private JTextField score_p4;
+	private JTextField jtf;
 	private ArrayList<JTextField> textfield_array;
 	private JButton btnInvite;
 	
@@ -55,13 +59,15 @@ public class GameWindow {
 	private static int s_p2 = 0;
 	private static int s_p3 = 0;
 	private static int s_p4 = 0;
-	private int c = 0;
+	private int c = 0, row_t = 0, column_t = 0;
 	
     private Gson gson;
 	private BufferedWriter out;
 	private String usrnm;
+	static boolean addedmouseevent = false;
 	
 	private JList<String> list_gw;
+	private HashMap<String, String> hm = new HashMap<String, String>();
 
 	/**
 	 * Launch the application.
@@ -75,6 +81,11 @@ public class GameWindow {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+																					// New Code added for mouse listener
+				Container content = frame.getContentPane();
+			    content.add(new MouseMovement(), content);
+			    frame.setVisible(true);
 			}
 		});
 	}
@@ -104,14 +115,15 @@ public class GameWindow {
 		
 		
 		table = new JTable();
+		table.setGridColor(new Color(0, 0, 0));
+		table.setBackground(new Color(100, 149, 237));
 		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-			}
-		});
-		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		table.setBorder(new LineBorder(Color.GREEN, 2));
+			});
+
+		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		table.setCellSelectionEnabled(true);
+		table.setEnabled(false);
 		
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -159,7 +171,7 @@ public class GameWindow {
 				tableInit();				
 			}
 		});
-		btnClearTable.setBounds(630, 445, 134, 24);
+		btnClearTable.setBounds(630, 480, 134, 24);
 		frame.getContentPane().add(btnClearTable);
 		
 		JLabel lblPlayer = new JLabel("Player 1");
@@ -224,7 +236,7 @@ public class GameWindow {
 		textfield_array.add(textField_2);
 		textfield_array.add(textField_3);
 		
-		JLabel lblWaitlist = new JLabel("Waitlist");
+		JLabel lblWaitlist = new JLabel("Waitlist");										// Players waiting in Game Lobby
 		lblWaitlist.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblWaitlist.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWaitlist.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
@@ -244,8 +256,9 @@ public class GameWindow {
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnInvite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String[] invite_list=list_gw.getSelectedValuesList().toArray(new String[] {});
-				invitePlayers(invite_list);
+				String[] invite_list = list_gw.getSelectedValuesList().toArray(new String[] {});
+				if(invite_list.length >= 1)
+					invitePlayers(invite_list);
 			}
 		});
 		btnInvite.setBounds(653, 286, 89, 23);
@@ -295,7 +308,7 @@ public class GameWindow {
 			}
 		});
 		btnNewButton.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnNewButton.setBounds(630, 411, 134, 23);
+		btnNewButton.setBounds(630, 426, 134, 23);
 		frame.getContentPane().add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Pass");
@@ -304,32 +317,28 @@ public class GameWindow {
 			}
 		});
 		btnNewButton_1.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnNewButton_1.setBounds(630, 377, 134, 23);
+		btnNewButton_1.setBounds(630, 392, 134, 23);
 		frame.getContentPane().add(btnNewButton_1);
 		
-		JButton btnFreeze = new JButton("Freeze");
+		JButton btnFreeze = new JButton("Submit");
 		btnFreeze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				table.setEnabled(false);			
+				fillTable();
+				if (!addedmouseevent)
+					mouseEvent();
+				addedmouseevent = true;
+				//table.setEnabled(false);			
 			}
 		});
 		btnFreeze.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnFreeze.setBounds(630, 343, 134, 23);
+		btnFreeze.setBounds(630, 359, 134, 23);
 		frame.getContentPane().add(btnFreeze);
-		
-		JButton btnUnfreeze = new JButton("Unfreeze");
-		btnUnfreeze.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				table.setEnabled(true);
-			}
-		});
-		btnUnfreeze.setBorder(new LineBorder(new Color(0,0,0),2));
-		btnUnfreeze.setBounds(630, 484, 134, 20);
-		frame.getContentPane().add(btnUnfreeze);
 		
 		JButton btnStartGame = new JButton("Start Game");
 		btnStartGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				table.setEnabled(true);
+				btnStartGame.setEnabled(false);
 			}
 		});
 		btnStartGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -362,7 +371,41 @@ public class GameWindow {
 		});
 	}																						// Close initialize()
 	
-
+	public void fillTable() {																// Fill values in Hash Map 
+		String str_v;
+		String str_k;
+		for(int i=0; i<20; i++)
+			for(int j=0; j<20; j++) {
+				str_v = (String) table.getValueAt(i, j);
+				if(str_v != null && !(str_v.isEmpty())) {
+					str_k = Integer.toString(i) + "_" + Integer.toString(j);
+					if(hm.get(str_k) == null)
+						hm.put(str_k, str_v);
+				}
+			}
+	}
+	
+	public void mouseEvent() {				// New Code for making cell non editable
+			table.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					table = (JTable)e.getSource();
+					row_t = table.getSelectedRow();
+					column_t = table.getSelectedColumn();
+					
+					String hm_cv = Integer.toString(row_t) + "_" + Integer.toString(column_t);
+					String val = (String) table.getValueAt(row_t, column_t);
+					
+					System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
+					
+					if (val != null && !(val.isEmpty())) {
+						if(hm.get(hm_cv) != null)
+							JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+					} 
+				}
+			});
+	}
+	
 	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							// Deciding Winner
 		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
 			JOptionPane.showMessageDialog(frame,"Player 1 Wins!!!");
@@ -416,7 +459,7 @@ public class GameWindow {
 		score_p3.setText("");
 		score_p4.setText("");
 		
-		JTextField jtf = new JTextField();
+		jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
 	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
@@ -575,10 +618,8 @@ public class GameWindow {
 
 }
 
-
-
 @SuppressWarnings("serial")
-class LimitedPlainDocument extends javax.swing.text.PlainDocument {
+class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restriction Of Characters
 	  private int maxLen = -1;
 	  /** Creates a new instance of LimitedPlainDocument */     
 	  public LimitedPlainDocument() {}
