@@ -244,8 +244,9 @@ public class GameWindow {
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnInvite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String[] invite_list=list_gw.getSelectedValuesList().toArray(new String[] {});
-				invitePlayers(invite_list);
+				String[] invite_list = list_gw.getSelectedValuesList().toArray(new String[] {});
+				if(invite_list.length >= 1)
+					invitePlayers(invite_list);
 			}
 		});
 		btnInvite.setBounds(653, 286, 89, 23);

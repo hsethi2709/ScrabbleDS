@@ -69,12 +69,13 @@ public class ServeClientThread extends Thread {
                     case "Login": {
                         Packet<Login> loginPacket = gson.fromJson(clientJson, new TypeToken<Packet<Login>>() {}.getType());
                         this.username = loginPacket.getContent().getUsername();
-                        server.registerToWaiting(this.username, this);
-                        Reply reply = new Reply("Login", true, gameStarted);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
+                        Boolean result=server.registerToWaiting(this.username, this);
+                        Reply reply = new Reply("Login", result, gameStarted);
+                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Login");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
-                        server.broadcastWaitingList();
+                        if(result)
+                        	server.broadcastWaitingList();
                         break;
                     }
                     case "CreateGame": {
