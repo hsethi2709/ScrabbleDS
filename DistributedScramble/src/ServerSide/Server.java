@@ -87,8 +87,13 @@ public class Server {
         String[] list = waitingList.toArray(new String[0]);
         System.out.println(list.length);
         if(list.length==0) {
-        	for (ServeClientThread t : threadMap.values())
-        		t.send(new Packet<WaitingList>("WaitingList", null,"Server"));
+        	if(threadMap.isEmpty()) {
+        		
+        	}
+        	else {
+        		for (ServeClientThread t : threadMap.values())
+        			t.send(new Packet<WaitingList>("WaitingList", null,"Server"));
+        			}
         	}
         	else {
         	for (ServeClientThread t : threadMap.values()) 
@@ -113,9 +118,15 @@ public class Server {
     	}
     }
 
-    public synchronized void registerToWaiting(String username, ServeClientThread thread) {
-        threadMap.put(username, thread);
-        waitingList.add(username);
+    public synchronized Boolean registerToWaiting(String username, ServeClientThread thread) {
+    	if(threadMap.containsKey(username)) {
+    		return false;
+    	}
+    	else {
+	        threadMap.put(username, thread);
+	        waitingList.add(username);
+	        return true;
+    	}
     }
     
     public synchronized void registerToGame(String username) {
@@ -140,6 +151,7 @@ public class Server {
     public void logOut(String usrnm) {
     	waitingList.remove(usrnm);
     	threadMap.get(usrnm).send(new Packet<GameList>("Logout", null, "Server"));
+    	threadMap.remove(usrnm);
     	broadcastWaitingList();
     }
     

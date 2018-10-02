@@ -180,6 +180,10 @@ public class WaitListGUI {
 		btnJoinGame.setEnabled(true);
 	}
 	
+	public void disbleJoinButton() {
+		btnJoinGame.setEnabled(false);
+	}
+	
 	public void enableCreateButton() {
 		btnCreateGame.setEnabled(true);
 	}
