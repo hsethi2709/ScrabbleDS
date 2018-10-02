@@ -62,17 +62,37 @@ public class ListeningThread extends Thread {
                     System.out.println(inPacket.getContent().getType());
                     System.out.println(inPacket.getContent().getResult());
                     System.out.println(inPacket.getContent().getMessage());
-                    if(inPacket.getContent().getMessage()!=null && inPacket.getContent().getMessage().equals("Yes"))
+                    if(inPacket.getContent().getMessage()!=null && inPacket.getContent().getMessage().equals("Yes")) {
                     	wl.disableCreateButton();
+                    	System.out.println("Disabling Create Button for:"+username);
+                    }
+                    else {
+                    	wl.enableCreateButton();
+                    }
                 }
 				
 				else if(header.equals("WaitingList")) {
                 	Type type=new TypeToken<Packet<WaitingList>>() {}.getType();
                 	Packet<WaitingList> inPacket=gson.fromJson(str, type);
-                	list=inPacket.getContent().getList();
-                	System.out.println("Sending List to WaitList: "+ list);
-                	wl.updateWlGUI(list);
-                	gw.updateGwGUI(list);
+                	if(inPacket.getContent()!=null) {
+                		list=inPacket.getContent().getList();
+                		System.out.println("Sending List to WaitList: "+ list);
+                		wl.updateWlGUI(list);
+                		gw.updateGwGUI(list);
+                	}
+                	else {
+                		list=new String[1];
+                		list[0]="";
+                		wl.updateWlGUI(list);
+                		gw.updateGwGUI(list);
+                	}
+                	
+                	if(inPacket.getContent()!=null && inPacket.getContent().gameStatus().equals("Yes")) //Checking if Game has started to disable/enable the create button
+                		wl.disableCreateButton();
+                	else
+                		wl.enableCreateButton();
+                	
+                	
                 }
                 
 				else if(header.equals("GameList")) {
@@ -81,14 +101,17 @@ public class ListeningThread extends Thread {
                 	list=inPacket.getContent().getList();
                 	System.out.println("Sending GameList: "+ list);
                 	gw.gameGUI();
-                	wl.disableCreateButton(); 				// disabling the create button once a game is created
-                	gw.updateGameList(list); 				// sending the game players list to the game window
+                	gw.updateGameList(list);			// sending the game players list to the game window
                 }
                 
 				else if(header.equals("EndGame")) {
+					System.out.println("Ending Game for and starting Waiting List:"+username);
 					wl.waitGUI();
-					gw.closeGameGUI();
+					System.out.println("Enabling Create Button");
 					wl.enableCreateButton();
+					System.out.println("Close Game GUI");
+					gw.closeGameGUI();
+					
 				}
                 
 				else if(header.equals("Logout")) {
@@ -97,10 +120,14 @@ public class ListeningThread extends Thread {
 				else if(header.equals("Invitation")) {
 					wl.enableJoinButton();
 				}
+				else if(header.equals("JoinGame")) {
+					gw.disableInviteButton();
+				}
             }
         } catch (Exception e) {
             if (flag) {
                 System.out.println("Connection Stream aborts unexpectedly.\n");
+                e.printStackTrace();
                 flag = false;
             }
         }

@@ -8,7 +8,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.google.gson.Gson;
-
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
 import Protocol.Invite;
@@ -23,8 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.MatteBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
@@ -52,6 +49,7 @@ public class GameWindow {
 	private JTextField score_p3;
 	private JTextField score_p4;
 	private ArrayList<JTextField> textfield_array;
+	private JButton btnInvite;
 	
 	private static int s_p1 = 0;
 	private static int s_p2 = 0;
@@ -242,7 +240,7 @@ public class GameWindow {
 		
 		
 		
-		JButton btnInvite = new JButton("Invite");									//Inviting Players to join the game
+		btnInvite = new JButton("Invite");									//Inviting Players to join the game
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnInvite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -549,6 +547,7 @@ public class GameWindow {
 	
 	public void updateGameList(String[] game_list) {
 		for (int i=0;i<game_list.length;i++) {
+			System.out.println(game_list[i]);
 			textfield_array.get(i).setText(game_list[i]);
 		}
 	}
@@ -556,6 +555,7 @@ public class GameWindow {
 	public void closeGame() {											// Closing Window
 		
 		try {
+			
         Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
         out.write(gson.toJson(outPacket) + "\n");
         out.flush();
@@ -566,6 +566,10 @@ public class GameWindow {
 	
 	public void closeGameGUI() {
 		frame.dispose();
+	}
+	
+	public void disableInviteButton() {
+		btnInvite.setEnabled(false);
 	}
 	
 

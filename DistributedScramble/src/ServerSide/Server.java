@@ -85,11 +85,17 @@ public class Server {
 
     public void broadcastWaitingList() {
         String[] list = waitingList.toArray(new String[0]);
-
-        for (ServeClientThread t : threadMap.values()) {
-            t.send(new Packet<WaitingList>("WaitingList", new WaitingList(list),"Server"));
+        System.out.println(list.length);
+        if(list.length==0) {
+        	for (ServeClientThread t : threadMap.values())
+        		t.send(new Packet<WaitingList>("WaitingList", null,"Server"));
+        	}
+        	else {
+        	for (ServeClientThread t : threadMap.values()) 
+        		t.send(new Packet<WaitingList>("WaitingList", new WaitingList(list,gameStarted),"Server"));
+        	}
         }
-    }
+    
     
     public void broadcastGameList() {
         String[] list = gameList.toArray(new String[0]);
@@ -114,15 +120,21 @@ public class Server {
     
     public synchronized void registerToGame(String username) {
         gameList.add(username);
+        waitingList.remove(username);
+        
     }
     
     public void endGame() {
+    	System.out.println("GameList Size:"+gameList.size());
     	for (String name: gameList ) {
         	ServeClientThread t=threadMap.get(name);
+        	System.out.println("Sending End Game Packet to:"+name);
             t.send(new Packet<GameList>("EndGame", null, "Server"));
-            
+            System.out.print("Sent End Game Packet to:"+name);
+            waitingList.add(name);
         }
     	gameList.clear();
+    	
     }
     
     public void logOut(String usrnm) {
@@ -133,7 +145,7 @@ public class Server {
     
     public void updateGameStatus(String status)
     {
-    	gameStarted=status;
+    	this.gameStarted=status;
     }
 
     public static void main(String[] args) {

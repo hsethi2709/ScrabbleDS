@@ -60,7 +60,7 @@ public class ServeClientThread extends Thread {
             while ((clientJson = in.readLine()) != null) {
                 System.out.println("#Received: " + clientJson); // testing code
                 // when the type of incoming Json file is not clear, convert it by raw type and read its header.
-                Packet<?> inPacket = gson.fromJson(clientJson, Packet.class);   
+                Packet<?> inPacket = gson.fromJson(clientJson, Packet.class);
                 String header = inPacket.getHeader();
                 System.out.println("#Header: " + header); // testing code
                 // condition statements to judge header and take specific actions.
@@ -78,14 +78,16 @@ public class ServeClientThread extends Thread {
                         break;
                     }
                     case "CreateGame": {
-                        Reply reply = new Reply("CreateGame", true, null);
+                    	server.updateGameStatus("Yes");
+                    	this.gameStarted="Yes";
+                    	server.registerToGame(this.username);
+                        server.broadcastGameList();
+                        server.broadcastWaitingList();
+                        
+                        Reply reply = new Reply("Reply", true, gameStarted);
                         Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
-
-                        server.updateGameStatus("Yes");
-                        server.registerToGame(this.username);
-                        server.broadcastGameList();
                         break;
                     }
                     case "Invite": {
@@ -94,12 +96,14 @@ public class ServeClientThread extends Thread {
                         break;
                     }
                     case "JoinGame": {
-                        Reply reply = new Reply("JoinGame", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
+                    	server.registerToGame(this.username);
+                    	server.broadcastGameList();
+                    	server.broadcastWaitingList();
+                    	Reply reply = new Reply("JoinGame", true, null);
+                        Packet<Reply> outPacket= new Packet<Reply>("JoinGame", reply,"Server");
                         out.write(gson.toJson(outPacket) + "\n");
                         out.flush();
-                        server.registerToGame(this.username);
-                        server.broadcastGameList();
+                        
                         break;
                     }
                     case "StartGame": {
@@ -119,7 +123,11 @@ public class ServeClientThread extends Thread {
     
                     }
                     case "EndGame": {
+                    	server.updateGameStatus("No");
+                    	this.gameStarted="No";
+                    	System.out.println("Calling endGame Method");
                     	server.endGame();
+                    	server.broadcastWaitingList();
                     	break;
                     }
                     case "Logout": {

@@ -3,9 +3,11 @@ package Protocol;
 public class WaitingList {
 
     private String[] waitingList;
+    private String gameStatus;
 
-    public WaitingList(String[] waitingList) {
+    public WaitingList(String[] waitingList,String gameStatus) {
         this.waitingList = waitingList;
+        this.gameStatus=gameStatus;
     }
 
     public String[] getList() {
@@ -13,7 +15,7 @@ public class WaitingList {
     }
     
 
-    public int count() {
-        return this.waitingList.length;
+    public String gameStatus() {
+        return this.gameStatus;
     }
 }
