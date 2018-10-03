@@ -84,7 +84,7 @@ public class GameWindow {
 				
 																					// New Code added for mouse listener
 				Container content = frame.getContentPane();
-			    content.add(new MouseMovement(), content);
+			    //content.add(new MouseMovement(), content);
 			    frame.setVisible(true);
 			}
 		});
