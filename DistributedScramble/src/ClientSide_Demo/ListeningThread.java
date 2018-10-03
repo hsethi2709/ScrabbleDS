@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 
 import java.lang.reflect.Type;
 import java.net.Socket;
+
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -26,7 +27,9 @@ public class ListeningThread extends Thread {
     private BufferedWriter out;
     private Gson gson;
     private boolean flag;
-	private String username;
+
+    private String username;
+
     
 	String[] list;
 	JList<String> wait_list;
@@ -40,7 +43,8 @@ public class ListeningThread extends Thread {
         gson = new Gson();
         wl=new WaitListGUI(out, username);
         gw = new GameWindow(out, username);
-		this.username = username; 
+
+		this.username = username;
         flag=true;
     }
     
@@ -63,6 +67,7 @@ public class ListeningThread extends Thread {
                     if(!inPacket.getContent().getResult()) {
                     	Boolean status=true;
                     	while(status) {
+
                     		String s = JOptionPane.showInputDialog("Oops! Username is already taken or invalid. Please enter a different username");
                     		if(s==null) {
                     			closeSocket();
@@ -79,6 +84,7 @@ public class ListeningThread extends Thread {
                     			JOptionPane.showMessageDialog(new JFrame(), "Please enter a valid username. A valid username contains only alphabets and numbers. It should be a minimum of length 1.","Error", 1);
                     		}
                     	
+
                     			
                     	}
                     }
@@ -142,6 +148,9 @@ public class ListeningThread extends Thread {
 					closeSocket();
 				}
 				else if(header.equals("Invitation")) {
+					Type type=new TypeToken<Packet<Invitation>>() {}.getType();
+					Packet<Invitation> inPacket = gson.fromJson(str, type);
+					JOptionPane.showMessageDialog(new JFrame(), "You have been invited by "+inPacket.getContent().from()+". Please click on Join Button to enter the game.", "Invitation", JOptionPane.INFORMATION_MESSAGE);
 					wl.enableJoinButton();
 				}
 				else if(header.equals("JoinGame")) {
@@ -151,6 +160,7 @@ public class ListeningThread extends Thread {
         } catch (Exception e) {
             if (flag) {
                 System.out.println("Connection Stream aborts unexpectedly.\n");
+                JOptionPane.showMessageDialog(new JFrame(), "Server has disconnected", "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
                 flag = false;
             }
