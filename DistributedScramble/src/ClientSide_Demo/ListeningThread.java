@@ -148,6 +148,9 @@ public class ListeningThread extends Thread {
 					closeSocket();
 				}
 				else if(header.equals("Invitation")) {
+					Type type=new TypeToken<Packet<Invitation>>() {}.getType();
+					Packet<Invitation> inPacket = gson.fromJson(str, type);
+					JOptionPane.showMessageDialog(new JFrame(), "You have been invited by "+inPacket.getContent().from()+". Please click on Join Button to enter the game.", "Invitation", JOptionPane.INFORMATION_MESSAGE);
 					wl.enableJoinButton();
 				}
 				else if(header.equals("JoinGame")) {
@@ -157,6 +160,7 @@ public class ListeningThread extends Thread {
         } catch (Exception e) {
             if (flag) {
                 System.out.println("Connection Stream aborts unexpectedly.\n");
+                JOptionPane.showMessageDialog(new JFrame(), "Server has disconnected", "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
                 flag = false;
             }
