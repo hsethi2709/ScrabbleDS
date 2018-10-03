@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
 import Protocol.Invite;
+import Protocol.Reply;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -30,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -43,6 +45,10 @@ public class GameWindow {
 
 	protected JFrame frame;
 	private JTable table;
+	private JLabel lblPlayer;
+	private JLabel lblPlayer_1;
+	private JLabel lblPlayer_2;
+	private JLabel lblPlayer_3;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
@@ -51,8 +57,11 @@ public class GameWindow {
 	private JTextField score_p2;
 	private JTextField score_p3;
 	private JTextField score_p4;
+	private JButton btnStartGame;
 	private JTextField jtf;
 	private ArrayList<JTextField> textfield_array;
+	private ArrayList<JLabel> label_array;
+	
 	private JButton btnInvite;
 	
 	private static int s_p1 = 0;
@@ -83,7 +92,7 @@ public class GameWindow {
 				}
 				
 																					// New Code added for mouse listener
-				Container content = frame.getContentPane();
+				//Container content = frame.getContentPane();
 			    //content.add(new MouseMovement(), content);
 			    frame.setVisible(true);
 			}
@@ -164,6 +173,7 @@ public class GameWindow {
 
 	    
 		JButton btnClearTable = new JButton("Reset Game");
+		btnClearTable.setEnabled(false);
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -174,33 +184,43 @@ public class GameWindow {
 		btnClearTable.setBounds(630, 480, 134, 24);
 		frame.getContentPane().add(btnClearTable);
 		
-		JLabel lblPlayer = new JLabel("Player 1");
+		lblPlayer = new JLabel("Player 1");
 		lblPlayer.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblPlayer.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPlayer.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblPlayer.setBounds(102, 358, 86, 24);
+		lblPlayer.setOpaque(true);
 		frame.getContentPane().add(lblPlayer);
 		
-		JLabel lblPlayer_1 = new JLabel("Player 2");
+		lblPlayer_1 = new JLabel("Player 2");
 		lblPlayer_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPlayer_1.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblPlayer_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblPlayer_1.setBounds(214, 358, 86, 24);
+		lblPlayer_1.setOpaque(true);
 		frame.getContentPane().add(lblPlayer_1);
 		
-		JLabel lblPlayer_2 = new JLabel("Player 3");
+		lblPlayer_2 = new JLabel("Player 3");
 		lblPlayer_2.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPlayer_2.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblPlayer_2.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblPlayer_2.setBounds(328, 358, 86, 24);
+		lblPlayer_2.setOpaque(true);
 		frame.getContentPane().add(lblPlayer_2);
 		
-		JLabel lblPlayer_3 = new JLabel("Player 4");
+		lblPlayer_3 = new JLabel("Player 4");
 		lblPlayer_3.setHorizontalTextPosition(SwingConstants.CENTER);
 		lblPlayer_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPlayer_3.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lblPlayer_3.setBounds(439, 358, 86, 24);
+		lblPlayer_3.setOpaque(true);
 		frame.getContentPane().add(lblPlayer_3);
+		
+		label_array=new ArrayList<JLabel>();
+		label_array.add(lblPlayer);
+		label_array.add(lblPlayer_1);
+		label_array.add(lblPlayer_2);
+		label_array.add(lblPlayer_3);
 		
 		textField = new JTextField();
 		textField.setEditable(false);
@@ -302,6 +322,7 @@ public class GameWindow {
 		frame.getContentPane().add(lblNewLabel);
 		
 		JButton btnNewButton = new JButton("Calculate Score");
+		btnNewButton.setEnabled(false);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tableOperations();
@@ -312,8 +333,17 @@ public class GameWindow {
 		frame.getContentPane().add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Pass");
+		btnNewButton_1.setEnabled(false);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Packet<Reply> outPacket=new Packet<Reply>("StartGame",new Reply(null,true,null),usrnm);
+				try {
+					out.write(gson.toJson(outPacket)+ "\n");
+					out.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnNewButton_1.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -321,8 +351,11 @@ public class GameWindow {
 		frame.getContentPane().add(btnNewButton_1);
 		
 		JButton btnFreeze = new JButton("Submit");
+		btnFreeze.setEnabled(false);
 		btnFreeze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				btnNewButton.setEnabled(true);
+				btnNewButton_1.setEnabled(true);
 				fillTable();
 				if (!addedmouseevent)
 					mouseEvent();
@@ -334,11 +367,24 @@ public class GameWindow {
 		btnFreeze.setBounds(630, 359, 134, 23);
 		frame.getContentPane().add(btnFreeze);
 		
-		JButton btnStartGame = new JButton("Start Game");
+		btnStartGame = new JButton("Start Game");
 		btnStartGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				table.setEnabled(true);
 				btnStartGame.setEnabled(false);
+				btnFreeze.setEnabled(true);
+				btnClearTable.setEnabled(true);
+				btnNewButton_1.setEnabled(true);
+				Packet<Reply> outPacket=new Packet<Reply>("StartGame",new Reply(null,true,null),usrnm);
+				try {
+					out.write(gson.toJson(outPacket)+ "\n");
+					out.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
 			}
 		});
 		btnStartGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -596,7 +642,12 @@ public class GameWindow {
 	}
 	
 	public void closeGame() {											// Closing Window
-		
+		for (int i=0;i<4;i++)
+			textfield_array.get(i).setText("");
+		btnStartGame.setEnabled(true);
+		btnInvite.setEnabled(true);
+		for (int j=0;j<4;j++)
+				label_array.get(j).setBackground(new JLabel().getBackground());
 		try {
 			
         Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
@@ -613,6 +664,15 @@ public class GameWindow {
 	
 	public void disableInviteButton() {
 		btnInvite.setEnabled(false);
+	}
+	
+	public void updateChance(int i) {
+		for (int j=0;j<4;j++) {
+			if(j==i)
+				label_array.get(j).setBackground(Color.green);
+			else
+				label_array.get(j).setBackground(new JLabel().getBackground());
+		}
 	}
 	
 
