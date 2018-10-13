@@ -39,7 +39,7 @@ public class Server {
     private List<String> waitingList;  // The list keeps usernames of players who are waiting to play.
     private List<String> gameList;  // The list keeps usernames of players who are waiting to play.
     private String gameStarted;
-    private int count;
+    private int chance;
     
     public Server(int port) throws IOException {
         this.port = port;
@@ -48,7 +48,7 @@ public class Server {
         waitingList = Collections.synchronizedList(new ArrayList<String>());
         gameList = Collections.synchronizedList(new ArrayList<String>());
         gameStarted="No";
-        this.count=0;
+        this.chance=0;
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -89,7 +89,7 @@ public class Server {
 
     public void broadcastWaitingList() {
         String[] list = waitingList.toArray(new String[0]);
-        System.out.println(list.length);
+        
         if(list.length==0) {
         	if(threadMap.isEmpty()) {
         		
@@ -140,7 +140,16 @@ public class Server {
         
     }
     
-    public void endGame() {
+    public void broadcastWord(Packet<Insert> packet ) {
+        
+        //for (ServeClientThread t : threadMap.values()) {
+        for (String name: gameList ) {
+        	ServeClientThread t=threadMap.get(name);
+            t.send(packet);
+        }
+    }
+    
+    public synchronized void endGame() {
     	System.out.println("GameList Size:"+gameList.size());
     	for (String name: gameList ) {
         	ServeClientThread t=threadMap.get(name);
@@ -148,7 +157,9 @@ public class Server {
             t.send(new Packet<GameList>("EndGame", null, "Server"));
             System.out.print("Sent End Game Packet to:"+name);
             waitingList.add(name);
+            
         }
+    	broadcastWaitingList();
     	gameList.clear();
     	
     }
@@ -167,13 +178,15 @@ public class Server {
     
     public void nextChance() {
     	
-    	if(this.count==gameList.size())
-    		this.count=0;
-    	String username=gameList.get(count);
+    	if(this.chance==gameList.size())
+    		endGame();
+    	else {
+    	String username=gameList.get(chance);
     	for (ServeClientThread t:threadMap.values())
-    		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.count), true, null) , username));
-    	this.count+=1;
+    		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.chance), true, null) , username));
+    	this.chance+=1;
     }
+    	}
 
     public static void main(String[] args) {
         int port = 0;
