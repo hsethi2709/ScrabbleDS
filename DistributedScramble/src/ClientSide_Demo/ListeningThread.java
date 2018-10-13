@@ -57,7 +57,7 @@ public class ListeningThread extends Thread {
                 System.out.println(str);
                 Packet<?> rawPacket = gson.fromJson(str, Packet.class);
                 String header = rawPacket.getHeader();
-                System.out.println(header);
+                System.out.println("#RECEIVED: "+header);
                 if (header.equals("Reply")) {
                     Type type = new TypeToken<Packet<Reply>>() {}.getType();
                     Packet<Reply> inPacket = gson.fromJson(str, type);
@@ -141,6 +141,7 @@ public class ListeningThread extends Thread {
 					wl.disbleJoinButton();
 					
 					gw.closeGameGUI();
+					gw=new GameWindow(out, this.username);
 					
 				}
                 
