@@ -1,26 +1,22 @@
 package Protocol;
 
+import java.util.HashMap;
+
 public class Insert {
 
-    private String character;
-    private int x;
-    private int y;
+    private HashMap<Integer, String>character;
+    private int column;
 
-    public Insert(String character, int x, int y) {
+    public Insert(HashMap<Integer,String> character, int y) {
         this.character = character;
-        this.x = x;
-        this.y = y;
+        this.column = y;
     }
 
-    public String getCharacter() {
+    public HashMap<Integer, String> getCharacter() {
         return this.character;
     }
 
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
+    public int getColumn() {
+        return this.column;
     }
 }

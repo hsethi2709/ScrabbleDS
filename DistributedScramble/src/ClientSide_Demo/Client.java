@@ -107,7 +107,7 @@ public class Client {
 						listeningThread.start();
 					} catch (NullPointerException e1) {
 						System.out.println("No connection with Server!!!");
-						e1.printStackTrace();
+						
 					}
 
 			            

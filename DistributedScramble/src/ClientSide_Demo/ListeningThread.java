@@ -153,13 +153,21 @@ public class ListeningThread extends Thread {
 					JOptionPane.showMessageDialog(new JFrame(), "You have been invited by "+inPacket.getContent().from()+". Please click on Join Button to enter the game.", "Invitation", JOptionPane.INFORMATION_MESSAGE);
 					wl.enableJoinButton();
 				}
-				else if(header.equals("JoinGame")) {
+				else if(header.equals("JoinGame")) {			//Invite Button Disabled for player who joins an existing game
 					gw.disableInviteButton();
+				}
+				else if(header.equals("Insert")) {
+					Type type=new TypeToken<Packet<Insert>>() {}.getType();
+					Packet<Insert> inPacket = gson.fromJson(str, type);
+					gw.updateTable(inPacket);
 				}
 				else if(header.equals("passChance")) {							//Passing the chance of the Player
 					Type type=new TypeToken<Packet<Reply>>() {}.getType();
 					Packet<Reply> inPacket = gson.fromJson(str, type);
 					gw.updateChance(Integer.parseInt(inPacket.getContent().getType()));
+				}
+				else if(header.equals("StartGame")) {
+					gw.startGame();
 				}
             }
         } catch (Exception e) {

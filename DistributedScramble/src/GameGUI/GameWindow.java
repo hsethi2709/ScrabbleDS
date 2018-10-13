@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import com.google.gson.Gson;
 import ClientSide_Demo.Packet;
 import Protocol.GameList;
+import Protocol.Insert;
 import Protocol.Invite;
 import Protocol.Reply;
 
@@ -19,7 +20,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
-import java.awt.Container;
 
 import javax.swing.JTextField;
 import javax.swing.JList;
@@ -49,6 +49,9 @@ public class GameWindow {
 	private JLabel lblPlayer_1;
 	private JLabel lblPlayer_2;
 	private JLabel lblPlayer_3;
+	private JButton btnFreeze;
+	private JButton btnClearTable;
+	private JButton btnpass;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
@@ -172,7 +175,7 @@ public class GameWindow {
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
 
 	    
-		JButton btnClearTable = new JButton("Reset Game");
+		btnClearTable = new JButton("Reset Game");
 		btnClearTable.setEnabled(false);
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
@@ -321,22 +324,22 @@ public class GameWindow {
 		lblNewLabel.setBounds(10, 393, 64, 20);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JButton btnNewButton = new JButton("Calculate Score");
-		btnNewButton.setEnabled(false);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton calculate_score = new JButton("Calculate Score");
+		calculate_score.setEnabled(false);
+		calculate_score.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tableOperations();
+				calculateScore();
 			}
 		});
-		btnNewButton.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnNewButton.setBounds(630, 426, 134, 23);
-		frame.getContentPane().add(btnNewButton);
+		calculate_score.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		calculate_score.setBounds(630, 426, 134, 23);
+		frame.getContentPane().add(calculate_score);
 		
-		JButton btnNewButton_1 = new JButton("Pass");
-		btnNewButton_1.setEnabled(false);
-		btnNewButton_1.addActionListener(new ActionListener() {
+		btnpass = new JButton("Pass");
+		btnpass.setEnabled(false);
+		btnpass.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Packet<Reply> outPacket=new Packet<Reply>("StartGame",new Reply(null,true,null),usrnm);
+				Packet<Reply> outPacket=new Packet<Reply>("Pass",new Reply(null,true,null),usrnm);
 				try {
 					out.write(gson.toJson(outPacket)+ "\n");
 					out.flush();
@@ -346,20 +349,22 @@ public class GameWindow {
 				}
 			}
 		});
-		btnNewButton_1.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		btnNewButton_1.setBounds(630, 392, 134, 23);
-		frame.getContentPane().add(btnNewButton_1);
+		btnpass.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		btnpass.setBounds(630, 392, 134, 23);
+		frame.getContentPane().add(btnpass);
 		
-		JButton btnFreeze = new JButton("Submit");
+		btnFreeze = new JButton("Submit");
 		btnFreeze.setEnabled(false);
 		btnFreeze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnNewButton.setEnabled(true);
-				btnNewButton_1.setEnabled(true);
+				calculate_score.setEnabled(true);
+				btnpass.setEnabled(true);
 				fillTable();
 				if (!addedmouseevent)
 					mouseEvent();
 				addedmouseevent = true;
+				sendWord();
+				
 				//table.setEnabled(false);			
 			}
 		});
@@ -371,10 +376,7 @@ public class GameWindow {
 		btnStartGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				table.setEnabled(true);
-				btnStartGame.setEnabled(false);
-				btnFreeze.setEnabled(true);
-				btnClearTable.setEnabled(true);
-				btnNewButton_1.setEnabled(true);
+				startGame();
 				Packet<Reply> outPacket=new Packet<Reply>("StartGame",new Reply(null,true,null),usrnm);
 				try {
 					out.write(gson.toJson(outPacket)+ "\n");
@@ -511,6 +513,12 @@ public class GameWindow {
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
 
 	}
+	public void startGame() {
+		btnStartGame.setEnabled(false);
+		btnFreeze.setEnabled(true);
+		btnClearTable.setEnabled(true);
+		btnpass.setEnabled(true);
+	}
 
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
 		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
@@ -569,6 +577,132 @@ public class GameWindow {
 	   theTable.addKeyListener(tableKeyListener);
 	   theTable.addMouseListener(tableMouseListener);
 	   
+	
+	}
+	catch(Exception e) {
+		JOptionPane.showMessageDialog(frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	}
+	}
+	
+	public void invitePlayers(String[] invitation_list)  				//Sending Invitation List to the Server
+	{
+		try {
+		Packet<Invite> outPacket=new Packet<Invite>("Invite",new Invite(invitation_list),usrnm);
+		out.write(gson.toJson(outPacket)+ "\n");
+		out.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	// Updating the Game List into the TextField's
+	
+	public void updateGameList(String[] game_list) {
+		for (int i=0;i<game_list.length;i++) {
+			System.out.println(game_list[i]);
+			textfield_array.get(i).setText(game_list[i]);
+		}
+	}
+	
+	public void closeGame() {											// Closing Window
+		for (int i=0;i<4;i++)
+			textfield_array.get(i).setText("");
+		btnStartGame.setEnabled(true);
+		btnInvite.setEnabled(true);
+		for (int j=0;j<4;j++)
+				label_array.get(j).setBackground(new JLabel().getBackground());
+		try {
+			
+        Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
+        out.write(gson.toJson(outPacket) + "\n");
+        out.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public void updateTable(Packet<Insert> packet) {
+		int c=packet.getContent().getColumn();
+		HashMap<Integer, String> word=packet.getContent().getCharacter();
+		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		for (Integer key: word.keySet()) {
+			model.setValueAt(word.get(key), key, c);
+		}
+		model.fireTableDataChanged();
+	}
+	
+	public void sendWord() {
+		int rc1 = table.getSelectionModel().getMaxSelectionIndex();
+		int rc2 = table.getSelectionModel().getMinSelectionIndex();
+		int cc1 = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
+		int cc2 = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
+		
+		int rs = rc1-rc2;
+        int cs = cc1-cc2; 
+        HashMap<Integer, String> word=new HashMap<>();
+        if(rs > 0) {
+        	c = 0;
+        	for(int i=rc2; i<=rc1; i++) { 
+        		if(table.getValueAt(i, cc1) == null) {
+        			c = 1;
+        			break;
+        		}
+        		else {
+        			word.put(i, (String) table.getValueAt(i, cc1));		
+        		}
+        	}
+        	    if(c == 0) {
+        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, cc1), usrnm );
+        	    	try {
+						out.write(gson.toJson(outPacket)+"\n");
+						out.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        	    	
+        	    }
+
+        	   else
+        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+         }
+           
+         else if(cs > 0) {
+        	 c = 0;
+        	 for(int j=cc2; j<=cc1; j++) {
+        		 if(table.getValueAt(rc1, j) == null) {
+        			c = 1;
+        			break;
+        		 }
+        		 else {
+         			word.put(j, (String) table.getValueAt(j, cc2));
+         		}
+        	 }
+	         if(c == 0) {										//Successful selection of correct word
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, cc2), usrnm );
+     	    	try {
+						out.write(gson.toJson(outPacket)+"\n");
+						out.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}      		   
+	         }
+	         else
+	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+         }
+           
+         else if(table.getValueAt(rc2, cc2) != null) {
+        	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+           	s_p1 = s_p1 + (cs + 1);
+  		 	score_p1.setText(Integer.toString(s_p1));
+         }
+         else
+           JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        
+	}
+	
+	public void calculateScore() {															//Calculates score
 		int rc1 = table.getSelectionModel().getMaxSelectionIndex();
 		int rc2 = table.getSelectionModel().getMinSelectionIndex();
 		int cc1 = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
@@ -616,49 +750,9 @@ public class GameWindow {
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
-	catch(Exception e) {
-		JOptionPane.showMessageDialog(frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	}
-	}
-	
-	public void invitePlayers(String[] invitation_list)  				//Sending Invitation List to the Server
-	{
-		try {
-		Packet<Invite> outPacket=new Packet<Invite>("Invite",new Invite(invitation_list),usrnm);
-		out.write(gson.toJson(outPacket)+ "\n");
-		out.flush();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-	}
-	
-	// Updating the Game List into the TextField's
-	
-	public void updateGameList(String[] game_list) {
-		for (int i=0;i<game_list.length;i++) {
-			System.out.println(game_list[i]);
-			textfield_array.get(i).setText(game_list[i]);
-		}
-	}
-	
-	public void closeGame() {											// Closing Window
-		for (int i=0;i<4;i++)
-			textfield_array.get(i).setText("");
-		btnStartGame.setEnabled(true);
-		btnInvite.setEnabled(true);
-		for (int j=0;j<4;j++)
-				label_array.get(j).setBackground(new JLabel().getBackground());
-		try {
-			
-        Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
-        out.write(gson.toJson(outPacket) + "\n");
-        out.flush();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-	}
 	
 	public void closeGameGUI() {
+		
 		frame.dispose();
 	}
 	
