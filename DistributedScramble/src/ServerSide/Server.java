@@ -40,6 +40,7 @@ public class Server {
     private List<String> gameList;  // The list keeps usernames of players who are waiting to play.
     private String gameStarted;
     private int chance;
+    private int passCount;
     
     public Server(int port) throws IOException {
         this.port = port;
@@ -49,6 +50,7 @@ public class Server {
         gameList = Collections.synchronizedList(new ArrayList<String>());
         gameStarted="No";
         this.chance=0;
+        this.passCount=0;
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -159,6 +161,7 @@ public class Server {
             waitingList.add(name);
             
         }
+    	updateGameStatus("No");
     	broadcastWaitingList();
     	gameList.clear();
     	
@@ -176,16 +179,23 @@ public class Server {
     	this.gameStarted=status;
     }
     
-    public void nextChance() {
+    public void nextChance(int i) {
+    	if(i==1)
+    		this.passCount+=1;
+    	else
+    		this.passCount=0;
     	
-    	if(this.chance==gameList.size())
+    	if(this.passCount==gameList.size())
     		endGame();
     	else {
+    	if(this.chance==gameList.size())
+    		this.chance=0;
+    	 
     	String username=gameList.get(chance);
     	for (ServeClientThread t:threadMap.values())
     		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.chance), true, null) , username));
     	this.chance+=1;
-    }
+    	}
     	}
 
     public static void main(String[] args) {

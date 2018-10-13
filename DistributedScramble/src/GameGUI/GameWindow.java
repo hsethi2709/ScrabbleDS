@@ -752,7 +752,6 @@ public class GameWindow {
 	}
 	
 	public void closeGameGUI() {
-		
 		frame.dispose();
 	}
 	

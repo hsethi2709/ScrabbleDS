@@ -108,11 +108,11 @@ public class ServeClientThread extends Thread {
                         break;
                     }
                     case "Pass":{
-                    	server.nextChance();
+                    	server.nextChance(1);
                     	break;
                     } 
                     case "StartGame": {
-                        server.nextChance();
+                        server.nextChance(0);
                         Packet<Reply> outPacket= new Packet<Reply>("StartGame", null,"Server");
                         server.broadcast(outPacket);
                         break;
@@ -120,17 +120,15 @@ public class ServeClientThread extends Thread {
                     case "Insert": {
                     	Packet<Insert> insert=gson.fromJson(clientJson, new TypeToken<Packet<Insert>>() {}.getType());
                     	server.broadcastWord(insert);
+                    	server.nextChance(0);
                     	break;
-    
-                    }
-                    case "Highlight": {
     
                     }
                     case "Vote": {
     
                     }
                     case "EndGame": {
-                    	server.updateGameStatus("No");
+                    	
                     	this.gameStarted="No";
                     	System.out.println("Calling endGame Method");
                     	server.endGame();
