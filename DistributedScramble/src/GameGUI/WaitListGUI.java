@@ -95,6 +95,7 @@ public class WaitListGUI {
 					send_message.flush();  
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
+					System.out.println("Game could not be created");
 					e1.printStackTrace();
 				}
 				frame.setVisible(false);

@@ -18,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
-import java.awt.Container;
 
 import javax.swing.JTextField;
 import javax.swing.JList;
@@ -45,6 +44,7 @@ public class GameWindow {
 
 	protected JFrame frame;
 	private JTable table;
+	private DefaultTableModel myModel;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
@@ -83,11 +83,6 @@ public class GameWindow {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
-																					// New Code added for mouse listener
-				Container content = frame.getContentPane();
-			    content.add(new MouseMovement(), content);
-			    frame.setVisible(true);
 			}
 		});
 	}
@@ -117,47 +112,20 @@ public class GameWindow {
 		
 		
 		table = new JTable();
+		
+		myModel = new MyDefaultTableModel(21, 21);				//Calling Class for setting CellEditable Feature
+		table.setModel(myModel);
+		setTableEditable(true);
+		
 		table.setGridColor(new Color(0, 0, 0));
 		table.setBackground(new Color(100, 149, 237));
-		table.addMouseListener(new MouseAdapter() {
-			});
+		table.addMouseListener(new MouseAdapter() {});
 
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		table.setCellSelectionEnabled(true);
 		table.setEnabled(false);
 		
-		//table.getSelectionModel().addListSelectionListener(new MyListener());		// For only one chance to play
-		
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
-				"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
-			}
-		));
 		table.setBounds(10, 11, 577, 336);
 		frame.getContentPane().add(table);
 		
@@ -172,7 +140,8 @@ public class GameWindow {
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				winner(s_p1, s_p2, s_p3, s_p4);
-				tableInit();				
+				tableInit();																			//Need to improve
+				//table.setModel(myModel);
 			}
 		});
 		btnClearTable.setBounds(630, 480, 134, 24);
@@ -331,6 +300,35 @@ public class GameWindow {
 				if (!addedmouseevent)
 					mouseEvent();
 				addedmouseevent = true;
+																			// For setting cells non editable
+				setTableEditable(false);
+	            
+                for(int row = 0; row < table.getRowCount();row++)
+                {
+                    for(int column = 0; column < table.getColumnCount();column++)
+                    {
+                        //char c = (char) table.getValueAt(row, column);
+                        if((table.getValueAt(row, column)!= null))
+                        {
+                            if(row < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
+                            }
+                            if(column < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
+                            }
+                            if(row > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
+                            }
+                            if(column > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
+                            }
+                        }
+                    }
+                }
 				//table.setEnabled(false);			
 			}
 		});
@@ -389,7 +387,7 @@ public class GameWindow {
 			}
 	}
 	
-	public void mouseEvent() {				// New Code for making cell non editable
+	public void mouseEvent() {													// New Code for making cell non editable
 			table.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -400,7 +398,7 @@ public class GameWindow {
 					String hm_cv = Integer.toString(row_t) + "_" + Integer.toString(column_t);
 					String val = (String) table.getValueAt(row_t, column_t);
 					
-					System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
+					//System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
 					
 					if (val != null && !(val.isEmpty())) {
 						if(hm.get(hm_cv) != null)
@@ -411,6 +409,7 @@ public class GameWindow {
 	}
 	
 	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							// Deciding Winner
+		
 		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
 			JOptionPane.showMessageDialog(frame,"Player 1 Wins!!!");
 		else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
@@ -419,40 +418,30 @@ public class GameWindow {
 			JOptionPane.showMessageDialog(frame,"Player 3 Wins!!!");
 		else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
 			JOptionPane.showMessageDialog(frame,"Player 4 Wins!!!");
+		
+		else if (s_p1 == s_p2 && s_p2 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 2!!!");
+		else if (s_p1 == s_p3 && s_p3 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 3!!!");
+		else if (s_p1 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 4!!!");
+		else if (s_p2 == s_p3 && s_p3 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 2 & 3!!!");
+		else if (s_p2 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 2 & 4!!!");
+		else if (s_p3 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 3 & 4!!!");
+		
 		else
 			JOptionPane.showMessageDialog(frame,"No Winner!!!");
 	}
 	
 	public void tableInit() {
-		table.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				},
-				new String[] {
-					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
-					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
-				}));
-		
+		myModel = new MyDefaultTableModel(21, 21);				//Calling Class for setting CellEditable Feature
+		table.setModel(myModel);
+		setTableEditable(true);
+		table.setEnabled(true);
+
 		s_p1 = 0;
 		s_p2 = 0;
 		s_p3 = 0;
@@ -474,7 +463,7 @@ public class GameWindow {
 		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
 		
 		listPlayer_gw.removeAllElements();
-		System.out.println("Inside Game GUI: " + wait_list[0]);
+		//System.out.println("Inside Game GUI: " + wait_list[0]);
 		for(String item:wait_list) {
         	listPlayer_gw.addElement(item);
         }
@@ -602,10 +591,11 @@ public class GameWindow {
 	public void closeGame() {											// Closing Window
 		
 		try {
-			
         Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
         out.write(gson.toJson(outPacket) + "\n");
         out.flush();
+        tableInit();
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -619,7 +609,14 @@ public class GameWindow {
 		btnInvite.setEnabled(false);
 	}
 	
-
+	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell
+        for(int row = 0; row < table.getRowCount(); row++){
+            for(int column = 0; column < table.getColumnCount(); column++){
+                //char c = (char) table.getValueAt(row, column);
+                ((MyDefaultTableModel) myModel).setCellEditable(row, column, editable);
+            }
+        }
+    }
 }
 
 @SuppressWarnings("serial")
@@ -648,7 +645,7 @@ class MyListener implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-			System.out.println(e.getFirstIndex());
+			System.out.println("Row First Index: " + e.getFirstIndex() + " " + "Row Last Index: " + e.getLastIndex());
 			JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
 }
