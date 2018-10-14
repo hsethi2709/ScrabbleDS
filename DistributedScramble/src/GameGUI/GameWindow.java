@@ -344,7 +344,6 @@ public class GameWindow {
 					out.write(gson.toJson(outPacket)+ "\n");
 					out.flush();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -382,7 +381,6 @@ public class GameWindow {
 					out.write(gson.toJson(outPacket)+ "\n");
 					out.flush();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				
@@ -657,7 +655,6 @@ public class GameWindow {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
         	    	
@@ -684,7 +681,6 @@ public class GameWindow {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}      		   
 	         }
