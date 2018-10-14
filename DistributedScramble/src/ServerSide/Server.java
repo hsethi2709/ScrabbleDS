@@ -107,6 +107,10 @@ public class Server {
         	}
         }
     
+    public void resetChance()
+    {
+    	this.chance=0;
+    }
     
     public void broadcastGameList() {
         String[] list = gameList.toArray(new String[0]);

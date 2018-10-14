@@ -13,7 +13,7 @@ import org.kohsuke.args4j.Option;
 public class CmdLineArgs {
 
     @Option(required = false, name = "-p", aliases = {"--port"}, usage = "Port number")
-    private int port = 3000;
+    private int port = 4000;
     
     public int getPort() {
         return port;

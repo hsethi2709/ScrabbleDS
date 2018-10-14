@@ -81,6 +81,7 @@ public class ServeClientThread extends Thread {
                     case "CreateGame": {
                     	server.updateGameStatus("Yes");
                     	this.gameStarted="Yes";
+                    	server.resetChance();
                     	server.registerToGame(this.username);
                         server.broadcastGameList();
                         server.broadcastWaitingList();
