@@ -618,37 +618,49 @@ public class GameWindow {
 	}
 	
 	public void updateTable(Packet<Insert> packet) {
-		int c=packet.getContent().getColumn();
 		HashMap<Integer, String> word=packet.getContent().getCharacter();
 		DefaultTableModel model = (DefaultTableModel)table.getModel();
-		for (Integer key: word.keySet()) {
-			model.setValueAt(word.get(key), key, c);
+		
+		if (packet.getContent().getColumn() == -1) {
+			for (Integer key: word.keySet()) {
+				model.setValueAt(word.get(key), packet.getContent().getRow(),key);
+			}
 		}
-		model.fireTableDataChanged();
+		else if(packet.getContent().getRow()==-1) {
+			for (Integer key: word.keySet()) {
+				model.setValueAt(word.get(key), key, packet.getContent().getColumn());
+			}
+		}
+		else {
+			for (Integer key: word.keySet()) {
+				model.setValueAt(word.get(key), packet.getContent().getRow(), packet.getContent().getColumn());
+			}
+		}
+				model.fireTableDataChanged();
 	}
 	
 	public void sendWord() {
-		int rc1 = table.getSelectionModel().getMaxSelectionIndex();
-		int rc2 = table.getSelectionModel().getMinSelectionIndex();
-		int cc1 = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
-		int cc2 = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
+		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
+		int rowMin = table.getSelectionModel().getMinSelectionIndex();
+		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
+		int columnMin = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
 		
-		int rs = rc1-rc2;
-        int cs = cc1-cc2; 
+		int rowDiff = rowMax-rowMin;
+        int columnDiff = columnMax-columnMin; 
         HashMap<Integer, String> word=new HashMap<>();
-        if(rs > 0) {
+        if(rowDiff > 0) {
         	c = 0;
-        	for(int i=rc2; i<=rc1; i++) { 
-        		if(table.getValueAt(i, cc1) == null) {
+        	for(int i=rowMin; i<=rowMax; i++) { 
+        		if(table.getValueAt(i, columnMax) == null) {
         			c = 1;
         			break;
         		}
         		else {
-        			word.put(i, (String) table.getValueAt(i, cc1));		
+        			word.put(i, (String) table.getValueAt(i, columnMax));		
         		}
         	}
         	    if(c == 0) {
-        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, cc1), usrnm );
+        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, columnMax, -1), usrnm );
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -662,19 +674,19 @@ public class GameWindow {
         		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(cs > 0) {
+         else if(columnDiff > 0) {
         	 c = 0;
-        	 for(int j=cc2; j<=cc1; j++) {
-        		 if(table.getValueAt(rc1, j) == null) {
+        	 for(int j=columnMin; j<=columnMax; j++) {
+        		 if(table.getValueAt(rowMax, j) == null) {
         			c = 1;
         			break;
         		 }
         		 else {
-         			word.put(j, (String) table.getValueAt(j, cc2));
+         			word.put(j, (String) table.getValueAt(rowMax, j));
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, cc2), usrnm );
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,-1,rowMax), usrnm );
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -684,6 +696,17 @@ public class GameWindow {
 	         }
 	         else
 	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+         }
+        else if(table.getValueAt(rowMin, columnMin) != null) {
+         	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        	 word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
+        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin), usrnm );
+  	    	try {
+						out.write(gson.toJson(outPacket)+"\n");
+						out.flush();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}      		  
          }
            
        
@@ -769,6 +792,7 @@ public class GameWindow {
 	}
 	
 
+
 	
 
 
@@ -780,6 +804,7 @@ public class GameWindow {
             }
         }
     }
+
 
 }
 
