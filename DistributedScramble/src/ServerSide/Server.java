@@ -41,6 +41,8 @@ public class Server {
     private String gameStarted;
     private int chance;
     private int passCount;
+    private int voteCount;
+    private int voteResults;
     
     public Server(int port) throws IOException {
         this.port = port;
@@ -51,6 +53,8 @@ public class Server {
         gameStarted="No";
         this.chance=0;
         this.passCount=0;
+        this.voteCount=0;
+        this.voteResults=0;
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -110,6 +114,41 @@ public class Server {
     public void resetChance()
     {
     	this.chance=0;
+    }
+    
+    public void callVote(String username,String word) {
+    	for (String name: gameList ) {
+    		
+    		if(!name.trim().equals(username.trim())) {
+    			System.out.print("CallVote: "+ name +" " +username);
+        	ServeClientThread t=threadMap.get(name);
+            t.send(new Packet<Reply>("Vote", new Reply(username, false, word) ,username));
+    		}
+    	}
+    }
+    
+    public void countVote(String username,Boolean result) {
+    	this.voteCount+=1;
+    	System.out.println("Vote Count: "+voteCount);
+    	
+    	if(result==true) 
+    		this.voteResults+=1;
+    	System.out.println("VoteResult "+voteResults);
+    	if(this.voteCount==gameList.size()-1) {
+    		ServeClientThread t=threadMap.get(username);
+    		if(this.voteResults==gameList.size()-1) {
+    			t.send(new Packet<Reply>("VoteResult",new Reply(null,true,null),username));
+    			//Send Vote Approved Message
+    		}
+    		else {
+    			
+    			t.send(new Packet<Reply>("VoteResult",new Reply(null,false,null),username));
+    			//Send Vote Disapproved Message
+    		}
+    		this.voteCount=0;
+    		this.voteResults=0;
+    	}
+    	
     }
     
     public void broadcastGameList() {

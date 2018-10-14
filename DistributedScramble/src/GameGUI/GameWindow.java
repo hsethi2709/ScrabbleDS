@@ -12,6 +12,7 @@ import Protocol.GameList;
 import Protocol.Insert;
 import Protocol.Invite;
 import Protocol.Reply;
+import Protocol.Vote;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -639,12 +640,28 @@ public class GameWindow {
 				model.fireTableDataChanged();
 	}
 	
-	public void sendWord() {
+	public void callVote(StringBuffer word) {						// Sending word for voting
+		System.out.print("Inside CallVote: "+word);
+		Packet<Reply> outPacket=new Packet<Reply>("CallVote",new Reply(usrnm, false, word.toString()),usrnm);
+		
+		try {
+			out.write(gson.toJson(outPacket) + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+		
+	}
+	
+	public void sendWord() {									// Sending word for table updation
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
 		int columnMin = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
-		
+		StringBuffer wordString=new StringBuffer();
+		int flag=0;
 		int rowDiff = rowMax-rowMin;
         int columnDiff = columnMax-columnMin; 
         HashMap<Integer, String> word=new HashMap<>();
@@ -656,7 +673,9 @@ public class GameWindow {
         			break;
         		}
         		else {
-        			word.put(i, (String) table.getValueAt(i, columnMax));		
+        			word.put(i, (String) table.getValueAt(i, columnMax));
+        			wordString.append((String)table.getValueAt(i, columnMax));
+        			
         		}
         	}
         	    if(c == 0) {
@@ -664,6 +683,7 @@ public class GameWindow {
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
+						flag=1;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -683,6 +703,7 @@ public class GameWindow {
         		 }
         		 else {
          			word.put(j, (String) table.getValueAt(rowMax, j));
+         			wordString.append((String)table.getValueAt(rowMax, j));
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
@@ -690,6 +711,7 @@ public class GameWindow {
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
+						flag=1;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}      		   
@@ -700,18 +722,28 @@ public class GameWindow {
         else if(table.getValueAt(rowMin, columnMin) != null) {
          	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
         	 word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
+        	 wordString.append((String)table.getValueAt(rowMin, columnMax));
         	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin), usrnm );
   	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
+						flag=1;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}      		  
          }
-           
-       
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        
+        
+        if(flag==1) {								// Calling for Vote
+        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send word for vote?", "Vote?", JOptionPane.YES_NO_OPTION,
+        			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+        		callVote(wordString);
+        	}
+        }
+        
+        
         
 	}
 	

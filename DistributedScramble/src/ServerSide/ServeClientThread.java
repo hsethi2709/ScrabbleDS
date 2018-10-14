@@ -118,6 +118,15 @@ public class ServeClientThread extends Thread {
                         server.broadcast(outPacket);
                         break;
                     }
+                    
+                    case "CallVote": {
+                    	Packet<Reply> reply=gson.fromJson(clientJson,new TypeToken<Packet<Reply>>() {}.getType());
+                    	String username=reply.getUsername();
+                    	String word=reply.getContent().getMessage();
+                    	server.callVote(username,word);
+                    	break;
+                    }
+                    
                     case "Insert": {
                     	Packet<Insert> insert=gson.fromJson(clientJson, new TypeToken<Packet<Insert>>() {}.getType());
                     	server.broadcastWord(insert);
@@ -126,6 +135,11 @@ public class ServeClientThread extends Thread {
     
                     }
                     case "Vote": {
+                    	Packet<Vote> vote=gson.fromJson(clientJson, new TypeToken<Packet<Vote>>() {}.getType());
+                    	String username=vote.getUsername();
+                    	Boolean result=vote.getContent().isApprove();
+                    	server.countVote(username,result);
+                    	break;
     
                     }
                     case "EndGame": {
