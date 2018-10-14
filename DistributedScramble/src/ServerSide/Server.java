@@ -1,3 +1,5 @@
+
+
 /******************************************************************************
  *  Dependencies: gson-2.8.5.jar (third-party library) 
  *                Protocol Package
@@ -37,6 +39,7 @@ public class Server {
     private List<String> waitingList;  // The list keeps usernames of players who are waiting to play.
     private List<String> gameList;  // The list keeps usernames of players who are waiting to play.
     private String gameStarted;
+    private int count;
     
     public Server(int port) throws IOException {
         this.port = port;
@@ -45,6 +48,7 @@ public class Server {
         waitingList = Collections.synchronizedList(new ArrayList<String>());
         gameList = Collections.synchronizedList(new ArrayList<String>());
         gameStarted="No";
+        this.count=0;
     }
 
     public void execute(Scanner scanner, ExecutorService executor) {
@@ -119,7 +123,8 @@ public class Server {
     }
 
     public synchronized Boolean registerToWaiting(String username, ServeClientThread thread) {
-    	if(threadMap.containsKey(username)) {
+
+    	if(threadMap.containsKey(username) || username == null || username.contains(" ") || !username.matches("[A-Za-z0-9]+")) {
     		return false;
     	}
     	else {
@@ -159,6 +164,16 @@ public class Server {
     {
     	this.gameStarted=status;
     }
+    
+    public void nextChance() {
+    	
+    	if(this.count==gameList.size())
+    		this.count=0;
+    	String username=gameList.get(count);
+    	for (ServeClientThread t:threadMap.values())
+    		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.count), true, null) , username));
+    	this.count+=1;
+    }
 
     public static void main(String[] args) {
         int port = 0;
@@ -183,3 +198,4 @@ public class Server {
         }
     }
 }
+

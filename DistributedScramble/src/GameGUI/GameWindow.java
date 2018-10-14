@@ -53,8 +53,10 @@ public class GameWindow {
 	private JTextField score_p2;
 	private JTextField score_p3;
 	private JTextField score_p4;
+	private JButton btnStartGame;
 	private JTextField jtf;
 	private ArrayList<JTextField> textfield_array;
+	private ArrayList<JLabel> label_array;
 	private JButton btnInvite;
 	
 	private static int s_p1 = 0;
@@ -219,11 +221,15 @@ public class GameWindow {
         DefaultListModel<String> listPlayer_gw = new DefaultListModel<>();						// Player List
 		list_gw = new JList<String>(listPlayer_gw);
 
+		label_array=new ArrayList<JLabel>();
+		label_array.add(lblPlayer);
+		label_array.add(lblPlayer_1);
+		label_array.add(lblPlayer_2);
+		label_array.add(lblPlayer_3);
+		
 		list_gw.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		list_gw.setBounds(630, 46, 134, 219);
 		frame.getContentPane().add(list_gw);
-		
-		
 		
 		btnInvite = new JButton("Invite");									//Inviting Players to join the game
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -336,7 +342,7 @@ public class GameWindow {
 		btnFreeze.setBounds(630, 359, 134, 23);
 		frame.getContentPane().add(btnFreeze);
 		
-		JButton btnStartGame = new JButton("Start Game");
+		btnStartGame = new JButton("Start Game");
 		btnStartGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				table.setEnabled(true);
@@ -590,6 +596,13 @@ public class GameWindow {
 	
 	public void closeGame() {											// Closing Window
 		
+		for (int i=0;i<4;i++)
+			textfield_array.get(i).setText("");
+		btnStartGame.setEnabled(true);
+		btnInvite.setEnabled(true);
+		for (int j=0;j<4;j++)
+				label_array.get(j).setBackground(new JLabel().getBackground());
+		
 		try {
         Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
         out.write(gson.toJson(outPacket) + "\n");
@@ -607,6 +620,15 @@ public class GameWindow {
 	
 	public void disableInviteButton() {
 		btnInvite.setEnabled(false);
+	}
+	
+	public void updateChance(int i) {
+		for (int j=0;j<4;j++) {
+			if(j==i)
+				label_array.get(j).setBackground(Color.green);
+			else
+				label_array.get(j).setBackground(new JLabel().getBackground());
+		}
 	}
 	
 	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell

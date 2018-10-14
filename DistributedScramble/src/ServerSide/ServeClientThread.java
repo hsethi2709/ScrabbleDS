@@ -108,10 +108,7 @@ public class ServeClientThread extends Thread {
                         break;
                     }
                     case "StartGame": {
-                        Reply reply = new Reply("StartGame", true, null);
-                        Packet<Reply> outPacket= new Packet<Reply>("Reply", reply,"Server");
-                        out.write(gson.toJson(outPacket) + "\n");
-                        out.flush();
+                        server.nextChance();
                         break;
                     }
                     case "Insert": {
