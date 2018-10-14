@@ -169,8 +169,6 @@ public class ServeClientThread extends Thread {
             }
         }
     }
-    
-    
 
     public String getUsername() {
 		return username;

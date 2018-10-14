@@ -131,7 +131,8 @@ public class GameWindow {
 		table.setBackground(new Color(100, 149, 237));
 		table.addMouseListener(new MouseAdapter() {
 			});
-
+		
+		
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		table.setCellSelectionEnabled(true);
@@ -150,11 +151,13 @@ public class GameWindow {
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
 				winner();
+				
 				tableInit();				
 			}
 		});
+		
+	
 		btnClearTable.setBounds(630, 480, 134, 24);
 		frame.getContentPane().add(btnClearTable);
 		
@@ -328,32 +331,33 @@ public class GameWindow {
 				addedmouseevent = true;
 					// For setting cells non editable
 				setTableEditable(false);
-	            
-                for(int row = 0; row < table.getRowCount();row++)
-                {
-                    for(int column = 0; column < table.getColumnCount();column++)
-                    {
-                        if((table.getValueAt(row, column)!= null))
-                        {
-                            if(row < 20)
-                            {
-                                ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
-                            }
-                            if(column < 20)
-                            {
-                                ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
-                            }
-                            if(row > 0)
-                            {
-                            ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
-                            }
-                            if(column > 0)
-                            {
-                            ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
-                            }
-                        }
-                    }
-                }
+				 for(int row = 0; row < table.getRowCount();row++)
+		         {
+		             for(int column = 0; column < table.getColumnCount();column++)
+		             {
+		                 if((table.getValueAt(row, column)!= null))
+		                 {
+		                     if(row < 20)
+		                     {
+		                         ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
+		                     }
+		                     if(column < 20)
+		                     {
+		                         ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
+		                     }
+		                     if(row > 0)
+		                     {
+		                     ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
+		                     }
+		                     if(column > 0)
+		                     {
+		                     ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
+		                     }
+		                 }
+		             }
+		         }
+				
+               
 				sendWord((MyDefaultTableModel)myModel);
 				
 				//table.setEnabled(false);			
@@ -498,14 +502,18 @@ public class GameWindow {
 		score_p3.setText("");
 		score_p4.setText("");
 		
+	    hm.clear();
+		
 		jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
 	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
+
 	}
 	
 	public void startGame() {
 		btnStartGame.setEnabled(false);
+		btnInvite.setEnabled(false);
 	}
 
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
