@@ -322,7 +322,9 @@ public class GameWindow {
 			public void actionPerformed(ActionEvent e) {
 				
 				btnpass.setEnabled(true);
-				fillTable();
+				sendWord();									//Calling function to send word for voting
+				fillTable();								//Calling function to update HashMap
+				
 				if (!addedmouseevent)
 					mouseEvent();
 				addedmouseevent = true;
@@ -354,7 +356,6 @@ public class GameWindow {
                         }
                     }
                 }
-				sendWord();
 				
 				//table.setEnabled(false);			
 			}
@@ -640,17 +641,57 @@ public class GameWindow {
 		
 	}
 	
+	public boolean checkWord(int min, int max, int set, int lable) {				//To check if selected word is new
+		String str_k;
+		String str_v;
+		
+		if(lable == 1) {
+			for(int i = min; i <= max; i++) {
+				str_k = i + "_" + set;
+				str_v = hm.get(str_k);
+				System.out.println("Row Value: "+ str_v + ", Key: "+ str_k);
+				if(str_v == null)
+					return false;
+			}
+		}
+		
+		else {
+			for(int i = min; i <= max; i++) {
+				str_k = set + "_" + i;
+				str_v = hm.get(str_k);
+				System.out.println("Column Value: "+ str_v + ", Key: "+ str_k);
+				if(str_v == null)
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	public void sendWord() {									// Sending word for table updation
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
 		int columnMin = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
-		wordString=new StringBuffer();
+		
+		boolean check;
+		
+		
+		wordString = new StringBuffer();
+		
 		int flag=0;
 		int rowDiff = rowMax-rowMin;
         int columnDiff = columnMax-columnMin; 
-        HashMap<Integer, String> word=new HashMap<>();
-        if(rowDiff > 0) {
+        
+        HashMap<Integer, String> word = new HashMap<>();
+        
+        if(rowDiff > 0) {									//Its a vertical word
+        	
+        	check = checkWord(rowMin, rowMax, columnMin, 1);
+    		if (check == true) {
+    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+    			return;
+    		}
+        	
         	c = 0;
         	for(int i=rowMin; i<=rowMax; i++) { 
         		if(table.getValueAt(i, columnMax) == null) {
@@ -678,7 +719,14 @@ public class GameWindow {
         		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(columnDiff > 0) {
+         else if(columnDiff > 0) {								//Its a horizontal word
+        	 
+        	 check = checkWord(columnMin, columnMax, rowMin, 2);
+     		 if (check != true) {
+     			 JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+     			 return;
+     		 }
+        	 
         	 c = 0;
         	 for(int j=columnMin; j<=columnMax; j++) {
         		 if(table.getValueAt(rowMax, j) == null) {
@@ -727,7 +775,7 @@ public class GameWindow {
         		callVote(wordString);
         	}
         }
-	}
+	}														// End of Send Word
 	
 	public void updateScore(String username,String word) {
 		for (int i=0;i<4;i++) {
@@ -738,8 +786,6 @@ public class GameWindow {
 			
 		}
 	}
-	
-	
 	
 	public void closeGameGUI() {
 		winner();
