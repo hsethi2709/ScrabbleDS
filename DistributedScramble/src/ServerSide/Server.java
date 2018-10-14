@@ -39,7 +39,8 @@ public class Server {
     private String gameCreated;
     private int chance;
     private int passCount;
-    private String gameStarted;
+    @SuppressWarnings("unused")
+	private String gameStarted;
     private int voteCount;
     private int voteResults;
 
