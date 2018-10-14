@@ -692,11 +692,7 @@ public class GameWindow {
 	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(table.getValueAt(rc2, cc2) != null) {
-        	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-           	s_p1 = s_p1 + (cs + 1);
-  		 	score_p1.setText(Integer.toString(s_p1));
-         }
+       
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
         
@@ -742,11 +738,7 @@ public class GameWindow {
 	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(table.getValueAt(rc2, cc2) != null) {
-        	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-           	s_p1 = s_p1 + (cs + 1);
-  		 	score_p1.setText(Integer.toString(s_p1));
-         }
+        
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
