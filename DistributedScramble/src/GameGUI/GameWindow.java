@@ -91,15 +91,10 @@ public class GameWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//new GameWindow();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
-																					// New Code added for mouse listener
-				//Container content = frame.getContentPane();
-			    //content.add(new MouseMovement(), content);
 			    frame.setVisible(true);
 			}
 		});
@@ -115,8 +110,6 @@ public class GameWindow {
 		
 		initialize();
 	}
-	
-	//public GameWindow() {}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -143,7 +136,6 @@ public class GameWindow {
 		table.setCellSelectionEnabled(true);
 		table.setEnabled(false);
 		
-		
 		table.setBounds(10, 11, 577, 336);
 		frame.getContentPane().add(table);
 		
@@ -151,7 +143,6 @@ public class GameWindow {
 	    jtf.setDocument(new LimitedPlainDocument(1));
 	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
-
 	    
 		btnClearTable = new JButton("Reset Game");
 		btnClearTable.setEnabled(false);
@@ -251,8 +242,6 @@ public class GameWindow {
 		list_gw.setBounds(630, 46, 134, 219);
 		frame.getContentPane().add(list_gw);
 		
-		
-		
 		btnInvite = new JButton("Invite");									//Inviting Players to join the game
 		btnInvite.setBorder(new LineBorder(new Color(0, 0, 0)));
 		btnInvite.addActionListener(new ActionListener() {
@@ -347,7 +336,6 @@ public class GameWindow {
                 {
                     for(int column = 0; column < table.getColumnCount();column++)
                     {
-                        //char c = (char) table.getValueAt(row, column);
                         if((table.getValueAt(row, column)!= null))
                         {
                             if(row < 20)
@@ -390,8 +378,6 @@ public class GameWindow {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				
-				
 			}
 		});
 		btnStartGame.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -439,29 +425,29 @@ public class GameWindow {
 	}
 	
 	public void mouseEvent() {				// New Code for making cell non editable
-			table.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					String val="";
-					table = (JTable)e.getSource();
-					row_t = table.getSelectedRow();
-					column_t = table.getSelectedColumn();
-					
-					String hm_cv = Integer.toString(row_t) + "_" + Integer.toString(column_t);
-					try {
-					val = (String) table.getValueAt(row_t, column_t);
-					}
-					catch(Exception e1) {
-						JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-					}
-					System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
-					
-					if (val != null && !(val.isEmpty())) {
-						if(hm.get(hm_cv) != null)
-							JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-					} 
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String val="";
+				table = (JTable)e.getSource();
+				row_t = table.getSelectedRow();
+				column_t = table.getSelectedColumn();
+				
+				String hm_cv = Integer.toString(row_t) + "_" + Integer.toString(column_t);
+				try {
+				val = (String) table.getValueAt(row_t, column_t);
 				}
-			});
+				catch(Exception e1) {
+					JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+				}
+				System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
+				
+				if (val != null && !(val.isEmpty())) {
+					if(hm.get(hm_cv) != null)
+						JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+				} 
+			}
+		});
 	}
 	
 	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							// Deciding Winner
@@ -473,6 +459,7 @@ public class GameWindow {
 			JOptionPane.showMessageDialog(frame,"Player 3 Wins!!!");
 		else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
 			JOptionPane.showMessageDialog(frame,"Player 4 Wins!!!");
+		
 		else if (s_p1 == s_p2 && s_p2 != 0)
 			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 2!!!");
 		else if (s_p1 == s_p3 && s_p3 != 0)
@@ -484,7 +471,8 @@ public class GameWindow {
 		else if (s_p2 == s_p4 && s_p4 != 0)
 			JOptionPane.showMessageDialog(frame,"Tie between Player 2 & 4!!!");
 		else if (s_p3 == s_p4 && s_p4 != 0)
-			JOptionPane.showMessageDialog(frame,"Tie between Player 3 & 4!!!");							 
+			JOptionPane.showMessageDialog(frame,"Tie between Player 3 & 4!!!");
+		
 		else
 			JOptionPane.showMessageDialog(frame,"No Winner!!!");
 	}
@@ -495,7 +483,6 @@ public class GameWindow {
 		setTableEditable(true);
 		table.setEnabled(true);
 
-		
 		s_p1 = 0;
 		s_p2 = 0;
 		s_p3 = 0;
@@ -510,15 +497,14 @@ public class GameWindow {
 	    jtf.setDocument(new LimitedPlainDocument(1));
 	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
-
 	}
+	
 	public void startGame() {
 		btnStartGame.setEnabled(false);
-		
 	}
 
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
-		DefaultListModel<String> listPlayer_gw=(DefaultListModel<String>) list_gw.getModel();
+		DefaultListModel<String> listPlayer_gw = (DefaultListModel<String>) list_gw.getModel();
 		
 		listPlayer_gw.removeAllElements();
 		System.out.println("Inside Game GUI: " + wait_list[0]);
@@ -527,62 +513,56 @@ public class GameWindow {
         }
 	}
 	
-	
 	JTable theTable = new JTable();									//your table
 	boolean pressingCTRL=false;										//flag, if pressing CTRL it is true, otherwise it is false.
 	Vector<int[]> selectedCells = new Vector<int[]>();				//int[]because every entry will store {cellX,cellY}
 
-	
 	public void tableOperations() {										// To Calculate the score as per selected Cells
-		
-	try {
-	   KeyListener tableKeyListener = new KeyAdapter() {
-
-	      @Override
-	      public void keyPressed(KeyEvent e) {
-	         if(e.getKeyCode()==KeyEvent.VK_CONTROL){					//check if user is pressing CTRL key
-	            pressingCTRL=true;
-	         }
-	      }
-
-	      @Override
-	      public void keyReleased(KeyEvent e) {
-	         if(e.getKeyCode()==KeyEvent.VK_CONTROL){					//check if user released CTRL key
-	            pressingCTRL=false;
-	         }
-	      }
-	   };
-
-	   MouseListener tableMouseListener = new MouseAdapter() {
-
-	      @Override
-	      public void mouseClicked(MouseEvent e) {
-	         if(pressingCTRL){										//check if user is pressing CTRL key
-	            int row = theTable.rowAtPoint(e.getPoint());		//get mouse-selected row
-	            int col = theTable.columnAtPoint(e.getPoint());		//get mouse-selected col
-	            int[] newEntry = new int[]{row,col};				//{row,col}=selected cell
-	            if(selectedCells.contains(newEntry)){
-	            													//cell was already selected, de-select it
-	               selectedCells.remove(newEntry);
-	            }else{
-	            													//cell was not selected
-	               selectedCells.add(newEntry);
-	            }
-	         }
-	      }
-	   };
-	   theTable.addKeyListener(tableKeyListener);
-	   theTable.addMouseListener(tableMouseListener);
-	   
+		try {
+		   KeyListener tableKeyListener = new KeyAdapter() {
 	
-	}
-	catch(Exception e) {
-		JOptionPane.showMessageDialog(frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	}
+		      @Override
+		      public void keyPressed(KeyEvent e) {
+		         if(e.getKeyCode() == KeyEvent.VK_CONTROL){					//check if user is pressing CTRL key
+		            pressingCTRL=true;
+		         }
+		      }
+	
+		      @Override
+		      public void keyReleased(KeyEvent e) {
+		         if(e.getKeyCode() == KeyEvent.VK_CONTROL){					//check if user released CTRL key
+		            pressingCTRL=false;
+		         }
+		      }
+		   };
+	
+		   MouseListener tableMouseListener = new MouseAdapter() {
+	
+		      @Override
+		      public void mouseClicked(MouseEvent e) {
+		         if(pressingCTRL){										//check if user is pressing CTRL key
+		            int row = theTable.rowAtPoint(e.getPoint());		//get mouse-selected row
+		            int col = theTable.columnAtPoint(e.getPoint());		//get mouse-selected col
+		            int[] newEntry = new int[]{row,col};				//{row,col}=selected cell
+		            if(selectedCells.contains(newEntry)){
+		            													//cell was already selected, de-select it
+		               selectedCells.remove(newEntry);
+		            }else{
+		            													//cell was not selected
+		               selectedCells.add(newEntry);
+		            }
+		         }
+		      }
+		   };
+		   theTable.addKeyListener(tableKeyListener);
+		   theTable.addMouseListener(tableMouseListener);
+		}
+		catch(Exception e) {
+			JOptionPane.showMessageDialog(frame,"No Word Selection!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		}
 	}
 	
-	public void invitePlayers(String[] invitation_list)  				//Sending Invitation List to the Server
-	{
+	public void invitePlayers(String[] invitation_list) { 				//Sending Invitation List to the Server
 		try {
 		Packet<Invite> outPacket=new Packet<Invite>("Invite",new Invite(invitation_list),usrnm);
 		out.write(gson.toJson(outPacket)+ "\n");
@@ -604,15 +584,15 @@ public class GameWindow {
 	public void closeGame() {											// Closing Window
 		for (int i=0;i<4;i++)
 			textfield_array.get(i).setText("");
+		
 		btnStartGame.setEnabled(true);
 		btnInvite.setEnabled(true);
 		for (int j=0;j<4;j++)
 				label_array.get(j).setBackground(new JLabel().getBackground());
 		try {
-			
-        Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
-        out.write(gson.toJson(outPacket) + "\n");
-        out.flush();
+	        Packet<GameList> outPacket = new Packet<GameList>("EndGame", null, usrnm);
+	        out.write(gson.toJson(outPacket) + "\n");
+	        out.flush();
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -687,7 +667,6 @@ public class GameWindow {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-        	    	
         	    }
 
         	   else
@@ -725,6 +704,7 @@ public class GameWindow {
         	 wordString.append((String)table.getValueAt(rowMin, columnMax));
         	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin), usrnm );
   	    	try {
+
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
 						flag=1;
@@ -742,9 +722,6 @@ public class GameWindow {
         		callVote(wordString);
         	}
         }
-        
-        
-        
 	}
 	
 	public void calculateScore() {															//Calculates score
@@ -822,11 +799,6 @@ public class GameWindow {
 			btnClearTable.setEnabled(false);
 		}
 	}
-	
-
-
-	
-
 
 	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell
         for(int row = 0; row < table.getRowCount(); row++){
@@ -836,8 +808,6 @@ public class GameWindow {
             }
         }
     }
-
-
 }
 
 @SuppressWarnings("serial")
@@ -863,10 +833,13 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restri
 	}
 	
 class MyListener implements ListSelectionListener {
-
+	
+	int counter = 0;
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 			System.out.println("Row First Index: " + e.getFirstIndex() + " " + "Row Last Index: " + e.getLastIndex());
-			JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+			if(counter == 0)
+				JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+			counter++;
 	}
 }
