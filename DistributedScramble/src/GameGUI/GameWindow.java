@@ -12,7 +12,7 @@ import Protocol.GameList;
 import Protocol.Insert;
 import Protocol.Invite;
 import Protocol.Reply;
-import Protocol.Vote;
+
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -150,7 +150,8 @@ public class GameWindow {
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				winner(s_p1, s_p2, s_p3, s_p4);
+				
+				winner();
 				tableInit();				
 			}
 		});
@@ -298,17 +299,6 @@ public class GameWindow {
 		lblNewLabel.setBounds(10, 393, 64, 20);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JButton calculate_score = new JButton("Calculate Score");
-		calculate_score.setEnabled(false);
-		calculate_score.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				calculateScore();
-			}
-		});
-		calculate_score.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		calculate_score.setBounds(630, 426, 134, 23);
-		frame.getContentPane().add(calculate_score);
-		
 		btnpass = new JButton("Pass");
 		btnpass.setEnabled(false);
 		btnpass.addActionListener(new ActionListener() {
@@ -330,7 +320,7 @@ public class GameWindow {
 		btnFreeze.setEnabled(false);
 		btnFreeze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				calculate_score.setEnabled(true);
+				
 				btnpass.setEnabled(true);
 				fillTable();
 				if (!addedmouseevent)
@@ -394,7 +384,6 @@ public class GameWindow {
 		JButton btnEndGame = new JButton("End Game");
 		btnEndGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				winner(s_p1, s_p2, s_p3, s_p4);												// Calling winner function
 				closeGame();
 			}
 		});
@@ -457,7 +446,16 @@ public class GameWindow {
 		});
 	}
 	
-	public void winner(int s_p1, int s_p2, int s_p3, int s_p4) {							// Deciding Winner
+	public void winner() {							// Deciding Winner
+		if(!score_p1.getText().equals(""))
+			s_p1=Integer.parseInt(score_p1.getText());
+		if(!score_p2.getText().equals(""))
+			s_p2=Integer.parseInt(score_p2.getText());
+		if(!score_p3.getText().equals(""))
+			s_p3=Integer.parseInt(score_p3.getText());
+		if(!score_p4.getText().equals(""))
+			s_p4=Integer.parseInt(score_p4.getText());
+		
 		if(s_p1 > s_p2 && s_p1 > s_p3 && s_p1 > s_p4)
 			JOptionPane.showMessageDialog(frame,"Player 1 Wins!!!");
 		else if (s_p2 > s_p1 && s_p2 > s_p3 && s_p2 > s_p4)
@@ -636,7 +634,6 @@ public class GameWindow {
 			out.write(gson.toJson(outPacket) + "\n");
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
        
@@ -725,7 +722,7 @@ public class GameWindow {
         
         
         if(flag==1) {								// Calling for Vote
-        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the word for vote?", "Vote?", JOptionPane.YES_NO_OPTION,
+        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the selected word for vote? \n  *Score will be calculated if all votes are passed!", "Vote?", JOptionPane.YES_NO_OPTION,
         			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
         		callVote(wordString);
         	}
@@ -735,56 +732,19 @@ public class GameWindow {
 	public void updateScore(String username,String word) {
 		for (int i=0;i<4;i++) {
 			if(username.equals(textfield_array.get(i).getText().trim())) {
+				
 				scoreFieldArray.get(i).setText(Integer.toString((Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
 			}
+			
 		}
 	}
 	
-	public void calculateScore() {															//Calculates score
-		int rc1 = table.getSelectionModel().getMaxSelectionIndex();
-		int rc2 = table.getSelectionModel().getMinSelectionIndex();
-		int cc1 = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
-		int cc2 = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
-		
-		int rs = rc1-rc2;
-        int cs = cc1-cc2; 
-           
-        if(rs > 0) {
-        	c = 0;
-        	for(int i=rc2; i<=rc1; i++) 
-        		if(table.getValueAt(i, cc1) == null) {
-        			c = 1;
-        			break;
-        		}
-        	    if(c == 0) {
-        	    	s_p1 = s_p1 + (rs + 1);
-        	    	score_p1.setText(Integer.toString(s_p1));
-        	    }
-
-        	   else
-        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-         }
-           
-         else if(cs > 0) {
-        	 c = 0;
-        	 for(int j=cc2; j<=cc1; j++)
-        		 if(table.getValueAt(rc1, j) == null) {
-        			c = 1;
-        			break;
-        		 }
-	         if(c == 0) {										//Successful selection of correct word
-	        	 s_p1 = s_p1 + (cs + 1);
-        		 score_p1.setText(Integer.toString(s_p1));      		   
-	         }
-	         else
-	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-         }
-         else
-           JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	}
+	
 	
 	public void closeGameGUI() {
+		winner();
 		frame.dispose();
+		
 	}
 	
 	public void disableInviteButton() {
