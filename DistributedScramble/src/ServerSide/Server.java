@@ -192,15 +192,15 @@ public class Server {
     	if(this.passCount==gameList.size())
     		endGame();
     	else {
-    	if(this.chance==gameList.size())
-    		this.chance=0;
-    	 
-    	String username=gameList.get(chance);
-    	for (ServeClientThread t:threadMap.values())
-    		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.chance), true, null) , username));
-    	this.chance+=1;
+	    	if(this.chance==gameList.size())
+	    		this.chance=0;
+	    	 
+	    	String username=gameList.get(chance);
+	    	for (ServeClientThread t:threadMap.values())
+	    		t.send(new Packet<Reply>("passChance" , new Reply(Integer.toString(this.chance), true, null) , username));
+	    	this.chance+=1;
     	}
-    	}
+    }
 
     public static void main(String[] args) {
         int port = 0;

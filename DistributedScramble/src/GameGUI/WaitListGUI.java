@@ -57,10 +57,10 @@ public class WaitListGUI {
 	 */
 	
 	public WaitListGUI(BufferedWriter out,String username) {
-		gson=new Gson();
-		send_message=out;
+		gson = new Gson();
+		send_message = out;
 		initialize();
-		this.username=username;
+		this.username = username;
 	}
 
 	/**
@@ -94,7 +94,6 @@ public class WaitListGUI {
 					send_message.write(gson.toJson(outPacket) + "\n");
 					send_message.flush();  
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				frame.setVisible(false);
@@ -117,7 +116,6 @@ public class WaitListGUI {
 					send_message.write(gson.toJson(outPacket) + "\n");
 					send_message.flush();  
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				frame.setVisible(false);
@@ -164,8 +162,9 @@ public class WaitListGUI {
 			}
 		frame.dispose();
 	}
+	
 	public void updateWlGUI(String[] wait_list)	{													//Updating waiting player list
-		DefaultListModel<String> listPlayer_wl=(DefaultListModel<String>) list_wl.getModel();
+		DefaultListModel<String> listPlayer_wl = (DefaultListModel<String>) list_wl.getModel();
 		
 		listPlayer_wl.removeAllElements();
 		System.out.println("Inside GUI: " + wait_list[0]);
@@ -173,8 +172,6 @@ public class WaitListGUI {
         	listPlayer_wl.addElement(item);
         }
 	}
-	
-	
 	
 	public void enableJoinButton() {
 		btnJoinGame.setEnabled(true);
