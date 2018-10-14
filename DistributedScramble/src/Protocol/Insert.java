@@ -2,16 +2,20 @@ package Protocol;
 
 import java.util.HashMap;
 
+import GameGUI.MyDefaultTableModel;
+
 public class Insert {
 
     private HashMap<Integer, String>character;
     private int column;
     private int row;
+    private MyDefaultTableModel myModel;
 
-    public Insert(HashMap<Integer,String> character, int y,int z) {
+    public Insert(HashMap<Integer,String> character, int y,int z, MyDefaultTableModel model) {
         this.character = character;
         this.column = y;
         this.row=z;
+        this.myModel=model;
     }
 
     public HashMap<Integer, String> getCharacter() {
@@ -24,4 +28,10 @@ public class Insert {
     public int getRow() {
     	return this.row;
     }
+    
+    public MyDefaultTableModel getModel() {
+    	return this.myModel;
+    }
+    
+    
 }

@@ -354,7 +354,7 @@ public class GameWindow {
                         }
                     }
                 }
-				sendWord();
+				sendWord((MyDefaultTableModel)myModel);
 				
 				//table.setEnabled(false);			
 			}
@@ -606,7 +606,7 @@ public class GameWindow {
 	
 	public void updateTable(Packet<Insert> packet) {
 		HashMap<Integer, String> word=packet.getContent().getCharacter();
-		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		DefaultTableModel model = (MyDefaultTableModel)table.getModel();
 		
 		if (packet.getContent().getColumn() == -1) {
 			for (Integer key: word.keySet()) {
@@ -640,7 +640,7 @@ public class GameWindow {
 		
 	}
 	
-	public void sendWord() {									// Sending word for table updation
+	public void sendWord(MyDefaultTableModel myModel) {									// Sending word for table updation
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
@@ -664,7 +664,7 @@ public class GameWindow {
         		}
         	}
         	    if(c == 0) {
-        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, columnMax, -1), usrnm );
+        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert", new Insert(word, columnMax, -1, myModel), usrnm);
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -691,7 +691,7 @@ public class GameWindow {
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,-1,rowMax), usrnm );
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,-1,rowMax, myModel), usrnm );
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -707,7 +707,7 @@ public class GameWindow {
          	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
         	 word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
         	 wordString.append((String)table.getValueAt(rowMin, columnMax));
-        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin), usrnm );
+        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin, myModel), usrnm );
   	    	try {
 
 						out.write(gson.toJson(outPacket)+"\n");
