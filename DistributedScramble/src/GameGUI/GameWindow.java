@@ -1,6 +1,5 @@
 package GameGUI;
 
-
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -25,6 +24,8 @@ import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;											
 import javax.swing.SwingConstants;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
@@ -45,6 +46,7 @@ public class GameWindow {
 
 	protected JFrame frame;
 	private JTable table;
+	private DefaultTableModel myModel;
 	private JLabel lblPlayer;
 	private JLabel lblPlayer_1;
 	private JLabel lblPlayer_2;
@@ -127,6 +129,9 @@ public class GameWindow {
 		
 		
 		table = new JTable();
+		myModel = new MyDefaultTableModel(21, 21);				//Calling Class for setting CellEditable Feature
+		table.setModel(myModel);
+		setTableEditable(true);																						
 		table.setGridColor(new Color(0, 0, 0));
 		table.setBackground(new Color(100, 149, 237));
 		table.addMouseListener(new MouseAdapter() {
@@ -137,35 +142,7 @@ public class GameWindow {
 		table.setCellSelectionEnabled(true);
 		table.setEnabled(false);
 		
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
-				"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
-			}
-		));
+		
 		table.setBounds(10, 11, 577, 336);
 		frame.getContentPane().add(table);
 		
@@ -362,6 +339,35 @@ public class GameWindow {
 				if (!addedmouseevent)
 					mouseEvent();
 				addedmouseevent = true;
+					// For setting cells non editable
+				setTableEditable(false);
+	            
+                for(int row = 0; row < table.getRowCount();row++)
+                {
+                    for(int column = 0; column < table.getColumnCount();column++)
+                    {
+                        //char c = (char) table.getValueAt(row, column);
+                        if((table.getValueAt(row, column)!= null))
+                        {
+                            if(row < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
+                            }
+                            if(column < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
+                            }
+                            if(row > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
+                            }
+                            if(column > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
+                            }
+                        }
+                    }
+                }
 				sendWord();
 				
 				//table.setEnabled(false);			
@@ -461,39 +467,28 @@ public class GameWindow {
 			JOptionPane.showMessageDialog(frame,"Player 3 Wins!!!");
 		else if (s_p4 > s_p1 && s_p4 > s_p2 && s_p4 > s_p3)
 			JOptionPane.showMessageDialog(frame,"Player 4 Wins!!!");
+		else if (s_p1 == s_p2 && s_p2 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 2!!!");
+		else if (s_p1 == s_p3 && s_p3 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 3!!!");
+		else if (s_p1 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 1 & 4!!!");
+		else if (s_p2 == s_p3 && s_p3 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 2 & 3!!!");
+		else if (s_p2 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 2 & 4!!!");
+		else if (s_p3 == s_p4 && s_p4 != 0)
+			JOptionPane.showMessageDialog(frame,"Tie between Player 3 & 4!!!");							 
 		else
 			JOptionPane.showMessageDialog(frame,"No Winner!!!");
 	}
 	
 	public void tableInit() {
-		table.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-				},
-				new String[] {
-					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column",
-					"New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column", "New column"
-				}));
+		myModel = new MyDefaultTableModel(21, 21);				//Calling Class for setting CellEditable Feature
+		table.setModel(myModel);
+		setTableEditable(true);
+		table.setEnabled(true);
+
 		
 		s_p1 = 0;
 		s_p2 = 0;
@@ -733,8 +728,6 @@ public class GameWindow {
 	         else
 	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
          }
-           
-        
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
 	}
@@ -756,7 +749,14 @@ public class GameWindow {
 		}
 	}
 	
-
+	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell
+        for(int row = 0; row < table.getRowCount(); row++){
+            for(int column = 0; column < table.getColumnCount(); column++){
+                //char c = (char) table.getValueAt(row, column);
+                ((MyDefaultTableModel) myModel).setCellEditable(row, column, editable);
+            }
+        }
+    }
 }
 
 @SuppressWarnings("serial")
@@ -780,3 +780,12 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restri
 	    super.insertString(param, str, attributeSet);
 	  }
 	}
+	
+class MyListener implements ListSelectionListener {
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+			System.out.println("Row First Index: " + e.getFirstIndex() + " " + "Row Last Index: " + e.getLastIndex());
+			JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	}
+}
