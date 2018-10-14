@@ -67,7 +67,8 @@ public class GameWindow {
 	private JTextField jtf;
 	private ArrayList<JTextField> textfield_array;
 	private ArrayList<JLabel> label_array;
-	
+	private ArrayList<JTextField> scoreFieldArray;
+	private StringBuffer wordString;
 	private JButton btnInvite;
 	
 	private static int s_p1 = 0;
@@ -284,6 +285,12 @@ public class GameWindow {
 		score_p4.setBounds(439, 427, 86, 20);
 		frame.getContentPane().add(score_p4);
 		score_p4.setColumns(10);
+		
+		scoreFieldArray=new ArrayList<JTextField>();
+		scoreFieldArray.add(score_p1);
+		scoreFieldArray.add(score_p2);
+		scoreFieldArray.add(score_p3);
+		scoreFieldArray.add(score_p4);
 		
 		JLabel lblNewLabel = new JLabel("Name:");
 		lblNewLabel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -578,6 +585,7 @@ public class GameWindow {
 		for (int i=0;i<game_list.length;i++) {
 			System.out.println(game_list[i]);
 			textfield_array.get(i).setText(game_list[i]);
+			scoreFieldArray.get(i).setText("0");
 		}
 	}
 	
@@ -640,7 +648,7 @@ public class GameWindow {
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
 		int columnMin = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
-		StringBuffer wordString=new StringBuffer();
+		wordString=new StringBuffer();
 		int flag=0;
 		int rowDiff = rowMax-rowMin;
         int columnDiff = columnMax-columnMin; 
@@ -717,11 +725,19 @@ public class GameWindow {
         
         
         if(flag==1) {								// Calling for Vote
-        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send word for vote?", "Vote?", JOptionPane.YES_NO_OPTION,
+        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the word for vote?", "Vote?", JOptionPane.YES_NO_OPTION,
         			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
         		callVote(wordString);
         	}
         }
+	}
+	
+	public void updateScore(String username,String word) {
+		for (int i=0;i<4;i++) {
+			if(username.equals(textfield_array.get(i).getText().trim())) {
+				scoreFieldArray.get(i).setText(Integer.toString((Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
+			}
+		}
 	}
 	
 	public void calculateScore() {															//Calculates score

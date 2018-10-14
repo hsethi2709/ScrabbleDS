@@ -138,7 +138,8 @@ public class ServeClientThread extends Thread {
                     	Packet<Vote> vote=gson.fromJson(clientJson, new TypeToken<Packet<Vote>>() {}.getType());
                     	String username=vote.getUsername();
                     	Boolean result=vote.getContent().isApprove();
-                    	server.countVote(username,result);
+                    	String word=vote.getContent().getWord();
+                    	server.countVote(username,result,word);
                     	break;
     
                     }

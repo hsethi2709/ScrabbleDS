@@ -254,7 +254,7 @@ public class Server {
     	}
     }
     
-    public void countVote(String username,Boolean result) {
+    public void countVote(String username,Boolean result,String word) {
     	this.voteCount+=1;
     	System.out.println("Vote Count: "+voteCount);
     	
@@ -264,12 +264,14 @@ public class Server {
     	if(this.voteCount==gameList.size()-1) {
     		ServeClientThread t=threadMap.get(username);
     		if(this.voteResults==gameList.size()-1) {
-    			t.send(new Packet<Reply>("VoteResult",new Reply(null,true,null),username));
+    			for (ServeClientThread t1: threadMap.values()) {
+    					t1.send(new Packet<Reply>("VoteResult",new Reply(null,true,word),username));
+    			}
     			//Send Vote Approved Message
     		}
     		else {
     			
-    			t.send(new Packet<Reply>("VoteResult",new Reply(null,false,null),username));
+    			t.send(new Packet<Reply>("VoteResult",new Reply(null,false,word),username));
     			//Send Vote Disapproved Message
     		}
     		this.voteCount=0;

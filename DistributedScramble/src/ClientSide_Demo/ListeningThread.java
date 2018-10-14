@@ -176,13 +176,13 @@ public class ListeningThread extends Thread {
 					
 					if (JOptionPane.showConfirmDialog(new JFrame(), "Do you agree that "+ inPacket.getContent().getMessage() +" is a word?" , this.username+"'s Vote", JOptionPane.YES_NO_OPTION,
 				            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-						Packet<Vote> outPacket=new Packet<Vote>("Vote", new Vote(true), inPacket.getUsername());
+						Packet<Vote> outPacket=new Packet<Vote>("Vote", new Vote(true,inPacket.getContent().getMessage()), inPacket.getUsername());
 						out.write(gson.toJson(outPacket)+ "\n");
 						out.flush();
 				        }
 					else
 					{
-						Packet<Vote> outPacket=new Packet<Vote>("Vote", new Vote(false), inPacket.getUsername());
+						Packet<Vote> outPacket=new Packet<Vote>("Vote", new Vote(false,inPacket.getContent().getMessage()), inPacket.getUsername());
 						out.write(gson.toJson(outPacket)+ "\n");
 						out.flush();
 					}
@@ -191,9 +191,18 @@ public class ListeningThread extends Thread {
 				else if(header.equals("VoteResult")) {
 					Type type=new TypeToken<Packet<Reply>>() {}.getType();
 					Packet<Reply> inPacket = gson.fromJson(str, type);
-					if(inPacket.getContent().getResult())
+					if(inPacket.getContent().getResult()) {
+						if(inPacket.getUsername().equals(username)) {
+							
 						JOptionPane.showMessageDialog(new JFrame(), "Your word has been approved", "Vote Results", JOptionPane.INFORMATION_MESSAGE);
+						
+						}
+						
+						gw.updateScore(inPacket.getUsername(),inPacket.getContent().getMessage());
+						
+						}
 					else
+						
 						JOptionPane.showMessageDialog(new JFrame(), "Your word has been rejected ", "Vote Results", JOptionPane.INFORMATION_MESSAGE);
 				}
             }
