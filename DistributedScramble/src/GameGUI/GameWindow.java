@@ -83,7 +83,7 @@ public class GameWindow {
 	static boolean addedmouseevent = false;
 	
 	private JList<String> list_gw;
-	private HashMap<String, String> hm = new HashMap<String, String>();
+	private HashMap<String, String> hmFilledCells = new HashMap<String, String>();
 
 	/**
 	 * Launch the application.
@@ -323,7 +323,6 @@ public class GameWindow {
 				
 				btnpass.setEnabled(true);
 				sendWord();									//Calling function to send word for voting
-				fillTable();								//Calling function to update HashMap
 				
 				if (!addedmouseevent)
 					mouseEvent();
@@ -407,20 +406,6 @@ public class GameWindow {
 		});
 	}																						// Close initialize()
 	
-	public void fillTable() {																// Fill values in Hash Map 
-		String str_v;
-		String str_k;
-		for(int i=0; i<20; i++)
-			for(int j=0; j<20; j++) {
-				str_v = (String) table.getValueAt(i, j);
-				if(str_v != null && !(str_v.isEmpty())) {
-					str_k = Integer.toString(i) + "_" + Integer.toString(j);
-					if(hm.get(str_k) == null)
-						hm.put(str_k, str_v);
-				}
-			}
-	}
-	
 	public void mouseEvent() {				// New Code for making cell non editable
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -435,13 +420,15 @@ public class GameWindow {
 				val = (String) table.getValueAt(row_t, column_t);
 				}
 				catch(Exception e1) {
-					JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", 
+							"Warning", JOptionPane.WARNING_MESSAGE);
 				}
 				System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
 				
 				if (val != null && !(val.isEmpty())) {
-					if(hm.get(hm_cv) != null)
-						JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+					if(hmFilledCells.get(hm_cv) != null)
+						JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", 
+								"Warning", JOptionPane.WARNING_MESSAGE);
 				} 
 			}
 		});
@@ -498,6 +485,8 @@ public class GameWindow {
 		score_p2.setText("");
 		score_p3.setText("");
 		score_p4.setText("");
+		
+		hmFilledCells.clear();
 		
 		jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
@@ -614,7 +603,7 @@ public class GameWindow {
 				model.setValueAt(word.get(key), packet.getContent().getRow(),key);
 			}
 		}
-		else if(packet.getContent().getRow()==-1) {
+		else if(packet.getContent().getRow() == -1) {
 			for (Integer key: word.keySet()) {
 				model.setValueAt(word.get(key), key, packet.getContent().getColumn());
 			}
@@ -628,8 +617,8 @@ public class GameWindow {
 	}
 	
 	public void callVote(StringBuffer word) {						// Sending word for voting
-		System.out.print("Inside CallVote: "+word);
-		Packet<Reply> outPacket=new Packet<Reply>("CallVote",new Reply(usrnm, false, word.toString()),usrnm);
+		System.out.print("Inside CallVote: " + word);
+		Packet<Reply> outPacket=new Packet<Reply>("CallVote",new Reply(usrnm, false, word.toString()), usrnm);
 		
 		try {
 			out.write(gson.toJson(outPacket) + "\n");
@@ -641,33 +630,79 @@ public class GameWindow {
 		
 	}
 	
-	public boolean checkWord(int min, int max, int set, int lable) {				//To check if selected word is new
+	public void recordTableEntry(int min, int max, int set, int lable) {					// Fill values in Hash Map 
+		
+		String str_v;
+		String str_k;
+		int i;
+		
+		if(lable == 1) {					// For Vertical Word
+			for(i = min; i<= max; i++) {
+				str_v = (String) table.getValueAt(i, set);
+				if(str_v != null && !(str_v.isEmpty())) {
+					str_k = Integer.toString(i) + "_" + Integer.toString(set);
+					if(hmFilledCells.get(str_k) == null)
+						hmFilledCells.put(str_k, str_v);
+				}
+			}
+		}
+		
+		else if(lable == 2) {				// For Horizontal Word 
+			for(i = min; i<= max; i++) {
+				str_v = (String) table.getValueAt(set, i);
+				if(str_v != null && !(str_v.isEmpty())) {
+					str_k = Integer.toString(set) + "_" + Integer.toString(i);
+					if(hmFilledCells.get(str_k) == null)
+						hmFilledCells.put(str_k, str_v);
+				}
+			}
+		}
+		
+		else {								// For single cell/letter
+			str_v = (String) table.getValueAt(min, max);
+			if(str_v != null && !(str_v.isEmpty())) {
+				str_k = Integer.toString(min) + "_" + Integer.toString(max);
+				if(hmFilledCells.get(str_k) == null)
+					hmFilledCells.put(str_k, str_v);
+			}
+		}
+	}
+	
+	public boolean checkIfNewWord(int min, int max, int set, int lable) {				//To check if selected word is new
 		String str_k;
 		String str_v;
 		
 		if(lable == 1) {
 			for(int i = min; i <= max; i++) {
 				str_k = i + "_" + set;
-				str_v = hm.get(str_k);
+				str_v = hmFilledCells.get(str_k);
 				System.out.println("Row Value: "+ str_v + ", Key: "+ str_k);
 				if(str_v == null)
 					return false;
 			}
 		}
 		
-		else {
+		else if (lable == 2) {
 			for(int i = min; i <= max; i++) {
 				str_k = set + "_" + i;
-				str_v = hm.get(str_k);
+				str_v = hmFilledCells.get(str_k);
 				System.out.println("Column Value: "+ str_v + ", Key: "+ str_k);
 				if(str_v == null)
 					return false;
 			}
 		}
+		
+		else {
+			str_k = min + "_" + max;
+			str_v = hmFilledCells.get(str_k);
+			System.out.println("Column Value: "+ str_v + ", Key: "+ str_k);
+			if(str_v == null)
+				return false;
+		}
 		return true;
 	}
 	
-	public void sendWord() {									// Sending word for table updation
+	public void sendWord() {									// Sending word for table update
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
@@ -684,14 +719,17 @@ public class GameWindow {
         
         HashMap<Integer, String> word = new HashMap<>();
         
-        if(rowDiff > 0) {									//Its a vertical word
+        if(rowDiff > 0) {											//Its a vertical word
         	
-        	check = checkWord(rowMin, rowMax, columnMin, 1);
+        	check = checkIfNewWord(rowMin, rowMax, columnMin, 1);
+        	
     		if (check == true) {
-    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", 
+    					"Warning", JOptionPane.WARNING_MESSAGE);
     			return;
     		}
         	
+    		recordTableEntry(rowMin, rowMax, columnMin, 1);			//Calling function to update HashMap
         	c = 0;
         	for(int i=rowMin; i<=rowMax; i++) { 
         		if(table.getValueAt(i, columnMax) == null) {
@@ -716,17 +754,21 @@ public class GameWindow {
         	    }
 
         	   else
-        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", 
+        				   "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(columnDiff > 0) {								//Its a horizontal word
+         else if(columnDiff > 0) {										//Its a horizontal word
         	 
-        	 check = checkWord(columnMin, columnMax, rowMin, 2);
+        	 check = checkIfNewWord(columnMin, columnMax, rowMin, 2);
+        	 
      		 if (check != true) {
-     			 JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+     			 JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n"
+     			 		+ "*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
      			 return;
      		 }
         	 
+     		 recordTableEntry(columnMin, columnMax, rowMin, 2);		//Calling function to update HashMap
         	 c = 0;
         	 for(int j=columnMin; j<=columnMax; j++) {
         		 if(table.getValueAt(rowMax, j) == null) {
@@ -739,7 +781,7 @@ public class GameWindow {
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,-1,rowMax), usrnm );
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, -1, rowMax), usrnm );
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -749,28 +791,40 @@ public class GameWindow {
 					}      		   
 	         }
 	         else
-	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!",
+	        			 "Warning", JOptionPane.WARNING_MESSAGE);
          }
-        else if(table.getValueAt(rowMin, columnMin) != null) {
-         	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-        	 word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
-        	 wordString.append((String)table.getValueAt(rowMin, columnMax));
-        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin), usrnm );
-  	    	try {
+        
+        else if(table.getValueAt(rowMin, columnMin) != null) {	//Its a single letter word
+        	
+        	check = checkIfNewWord(rowMin, columnMin, 0, 0);
+    		if (check == true) {
+    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n"
+    					+ "*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+    			return;
+    		}
+    		
+    		recordTableEntry(rowMin, columnMin, 0, 0);			//Calling function to update HashMap
 
-						out.write(gson.toJson(outPacket)+"\n");
-						out.flush();
-						flag=1;
-					} catch (IOException e) {
-						e.printStackTrace();
-					}      		  
+        	word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
+        	wordString.append((String)table.getValueAt(rowMin, columnMax));
+        	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, columnMin, rowMin), usrnm );
+        	
+  	    	try {
+  	    		out.write(gson.toJson(outPacket) + "\n");
+				out.flush();
+				flag=1;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}      		  
          }
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
         
         
-        if(flag==1) {								// Calling for Vote
-        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the selected word for vote? \n  *Score will be calculated if all votes are passed!", "Vote?", JOptionPane.YES_NO_OPTION,
+        if(flag == 1) {								// Calling for Vote
+        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the selected word for vote? \n"
+        			+ "*Score will be calculated if all votes are passed!", "Vote?", JOptionPane.YES_NO_OPTION,
         			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
         		callVote(wordString);
         	}
@@ -778,12 +832,10 @@ public class GameWindow {
 	}														// End of Send Word
 	
 	public void updateScore(String username,String word) {
-		for (int i=0;i<4;i++) {
-			if(username.equals(textfield_array.get(i).getText().trim())) {
-				
-				scoreFieldArray.get(i).setText(Integer.toString((Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
-			}
-			
+		for (int i = 0; i < 4; i++) {
+			if(username.equals(textfield_array.get(i).getText().trim()))
+				scoreFieldArray.get(i).setText(Integer.toString(
+						(Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
 		}
 	}
 	
@@ -837,20 +889,23 @@ class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restri
 	  private int maxLen = -1;
 	  /** Creates a new instance of LimitedPlainDocument */     
 	  public LimitedPlainDocument() {}
+	  
 	  public LimitedPlainDocument(int maxLen) { this.maxLen = maxLen; }
+	  
 	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
-	    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
-	      java.awt.Toolkit.getDefaultToolkit().beep();
-		  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	      return;
-	    }
-	    else if(!str.matches("[A-Za-z]"))
-	    {
-	    	java.awt.Toolkit.getDefaultToolkit().beep();
-	    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	    	return;
-	    }
-	    super.insertString(param, str, attributeSet);
+		  
+		    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
+		      java.awt.Toolkit.getDefaultToolkit().beep();
+			  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		      return;
+		    }
+		    else if(!str.matches("[A-Za-z]"))
+		    {
+		    	java.awt.Toolkit.getDefaultToolkit().beep();
+		    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		    	return;
+		    }
+		    super.insertString(param, str, attributeSet);
 	  }
 	}
 	
