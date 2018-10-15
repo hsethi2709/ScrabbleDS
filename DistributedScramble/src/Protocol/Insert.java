@@ -12,12 +12,12 @@ public class Insert {
     private MyDefaultTableModel myModel;
 
 
-    public Insert(HashMap<String, String> character, int y,int z) {
+    public Insert(HashMap<String, String> character, int y,int z, MyDefaultTableModel model) {
 
         this.character = character;
         this.column = y;
         this.row=z;
-        this.myModel=model;
+        this.myModel = model;
     }
 
     public HashMap<String, String> getCharacter() {

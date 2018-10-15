@@ -326,7 +326,7 @@ public class GameWindow {
 			public void actionPerformed(ActionEvent e) {
 				
 				btnpass.setEnabled(true);
-				sendWord();									//Calling function to send word for voting
+				sendWord((MyDefaultTableModel)myModel);				//Calling function to send word for voting
 				
 				if (!addedmouseevent)
 					mouseEvent();
@@ -706,7 +706,7 @@ public class GameWindow {
 		return true;
 	}
 	
-	public void sendWord() {									// Sending word for table update
+	public void sendWord(MyDefaultTableModel myModel) {									// Sending word for table update
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
@@ -747,7 +747,8 @@ public class GameWindow {
         		}
         	}
         	    if(c == 0) {
-        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMax, -1), usrnm );
+        	    	Packet<Insert> outPacket=new Packet<Insert>
+        	    	("Insert",new Insert(hmFilledCells, columnMax, -1, myModel), usrnm );
 
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
@@ -787,7 +788,8 @@ public class GameWindow {
         	 }
 	         if(c == 0) {										//Successful selection of correct word
 
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, -1, rowMax), usrnm );
+	        	 Packet<Insert> outPacket=new Packet<Insert>
+	        	 ("Insert",new Insert(hmFilledCells, -1, rowMax, myModel), usrnm );
 
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
@@ -817,7 +819,8 @@ public class GameWindow {
 
         	word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
         	wordString.append((String)table.getValueAt(rowMin, columnMax));
-        	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMin, rowMin), usrnm );
+        	Packet<Insert> outPacket=new Packet<Insert>
+        	("Insert",new Insert(hmFilledCells, columnMin, rowMin, myModel), usrnm );
         	
   	    	try {
   	    		out.write(gson.toJson(outPacket) + "\n");
