@@ -36,6 +36,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -83,7 +84,7 @@ public class GameWindow {
 	static boolean addedmouseevent = false;
 	
 	private JList<String> list_gw;
-	private HashMap<String, String> hm = new HashMap<String, String>();
+	private HashMap<String, String> hmFilledCells = new HashMap<String, String>();
 
 	/**
 	 * Launch the application.
@@ -325,40 +326,40 @@ public class GameWindow {
 			public void actionPerformed(ActionEvent e) {
 				
 				btnpass.setEnabled(true);
-				fillTable();
+				sendWord();									//Calling function to send word for voting
+				
 				if (!addedmouseevent)
 					mouseEvent();
 				addedmouseevent = true;
 					// For setting cells non editable
 				setTableEditable(false);
-				 for(int row = 0; row < table.getRowCount();row++)
-		         {
-		             for(int column = 0; column < table.getColumnCount();column++)
-		             {
-		                 if((table.getValueAt(row, column)!= null))
-		                 {
-		                     if(row < 20)
-		                     {
-		                         ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
-		                     }
-		                     if(column < 20)
-		                     {
-		                         ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
-		                     }
-		                     if(row > 0)
-		                     {
-		                     ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
-		                     }
-		                     if(column > 0)
-		                     {
-		                     ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
-		                     }
-		                 }
-		             }
-		         }
-				
-               
-				sendWord((MyDefaultTableModel)myModel);
+
+	            
+                for(int row = 0; row < table.getRowCount();row++)
+                {
+                    for(int column = 0; column < table.getColumnCount();column++)
+                    {
+                        if((table.getValueAt(row, column)!= null))
+                        {
+                            if(row < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row+1,column,true);
+                            }
+                            if(column < 20)
+                            {
+                                ((MyDefaultTableModel) myModel).setCellEditable(row,column+1,true);
+                            }
+                            if(row > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row-1,column,true);
+                            }
+                            if(column > 0)
+                            {
+                            ((MyDefaultTableModel) myModel).setCellEditable(row,column-1,true);
+                            }
+                        }
+                    }
+                }
 				
 				//table.setEnabled(false);			
 			}
@@ -410,20 +411,6 @@ public class GameWindow {
 		});
 	}																						// Close initialize()
 	
-	public void fillTable() {																// Fill values in Hash Map 
-		String str_v;
-		String str_k;
-		for(int i=0; i<20; i++)
-			for(int j=0; j<20; j++) {
-				str_v = (String) table.getValueAt(i, j);
-				if(str_v != null && !(str_v.isEmpty())) {
-					str_k = Integer.toString(i) + "_" + Integer.toString(j);
-					if(hm.get(str_k) == null)
-						hm.put(str_k, str_v);
-				}
-			}
-	}
-	
 	public void mouseEvent() {				// New Code for making cell non editable
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -438,13 +425,15 @@ public class GameWindow {
 				val = (String) table.getValueAt(row_t, column_t);
 				}
 				catch(Exception e1) {
-					JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(frame,"You are not allowed to Edit!!!", 
+							"Warning", JOptionPane.WARNING_MESSAGE);
 				}
 				System.out.println("Value of selected Row: " + row_t + " , Column: " + column_t + " Value: " + val);
 				
 				if (val != null && !(val.isEmpty())) {
-					if(hm.get(hm_cv) != null)
-						JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+					if(hmFilledCells.get(hm_cv) != null)
+						JOptionPane.showMessageDialog(frame,"Cannot Edit Filled Cell!!!", 
+								"Warning", JOptionPane.WARNING_MESSAGE);
 				} 
 			}
 		});
@@ -502,7 +491,9 @@ public class GameWindow {
 		score_p3.setText("");
 		score_p4.setText("");
 		
-	    hm.clear();
+
+		hmFilledCells.clear();
+
 		
 		jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
@@ -612,31 +603,26 @@ public class GameWindow {
 		}
 	}
 	
-	public void updateTable(Packet<Insert> packet) {
-		HashMap<Integer, String> word=packet.getContent().getCharacter();
-		DefaultTableModel model = (MyDefaultTableModel)table.getModel();
+
+	public void updateTable(Packet<Insert> packet) {						//To update the table w.r.t HashMap
+		hmFilledCells = packet.getContent().getCharacter();
 		
-		if (packet.getContent().getColumn() == -1) {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), packet.getContent().getRow(),key);
+		HashMap<String, String> wordToBeUpdated = packet.getContent().getCharacter();
+		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		StringTokenizer stWord; 
+
+			for (String key: wordToBeUpdated.keySet()) {
+				stWord = new StringTokenizer(key, "_");
+				
+				model.setValueAt(wordToBeUpdated.get(key), Integer.parseInt(stWord.nextToken().trim()), 
+						Integer.parseInt(stWord.nextToken().trim()));
 			}
-		}
-		else if(packet.getContent().getRow()==-1) {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), key, packet.getContent().getColumn());
-			}
-		}
-		else {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), packet.getContent().getRow(), packet.getContent().getColumn());
-			}
-		}
 				model.fireTableDataChanged();
 	}
 	
 	public void callVote(StringBuffer word) {						// Sending word for voting
-		System.out.print("Inside CallVote: "+word);
-		Packet<Reply> outPacket=new Packet<Reply>("CallVote",new Reply(usrnm, false, word.toString()),usrnm);
+		System.out.print("Inside CallVote: " + word);
+		Packet<Reply> outPacket=new Packet<Reply>("CallVote",new Reply(usrnm, false, word.toString()), usrnm);
 		
 		try {
 			out.write(gson.toJson(outPacket) + "\n");
@@ -647,18 +633,107 @@ public class GameWindow {
        
 		
 	}
+
+	public void recordTableEntry(int min, int max, int set, int lable) {			// Fill values in Hash Map 
+		
+		String str_v;
+		String str_k;
+		int i;
+		
+		if(lable == 1) {					// For Vertical Word
+			for(i = min; i<= max; i++) {
+				str_v = (String) table.getValueAt(i, set);
+				if(str_v != null && !(str_v.isEmpty())) {
+					str_k = Integer.toString(i) + "_" + Integer.toString(set);
+					if(hmFilledCells.get(str_k) == null)
+						hmFilledCells.put(str_k, str_v);
+				}
+			}
+		}
+		
+		else if(lable == 2) {				// For Horizontal Word 
+			for(i = min; i<= max; i++) {
+				str_v = (String) table.getValueAt(set, i);
+				if(str_v != null && !(str_v.isEmpty())) {
+					str_k = Integer.toString(set) + "_" + Integer.toString(i);
+					if(hmFilledCells.get(str_k) == null)
+						hmFilledCells.put(str_k, str_v);
+				}
+			}
+		}
+		
+		else {								// For single cell/letter
+			str_v = (String) table.getValueAt(min, max);
+			if(str_v != null && !(str_v.isEmpty())) {
+				str_k = Integer.toString(min) + "_" + Integer.toString(max);
+				if(hmFilledCells.get(str_k) == null)
+					hmFilledCells.put(str_k, str_v);
+			}
+		}
+	}
 	
-	public void sendWord(MyDefaultTableModel myModel) {									// Sending word for table updation
+	public boolean checkIfNewWord(int min, int max, int set, int lable) {			//To check if selected word is new
+		String str_k;
+		String str_v;
+		
+		if(lable == 1) {
+			for(int i = min; i <= max; i++) {
+				str_k = i + "_" + set;
+				str_v = hmFilledCells.get(str_k);
+				System.out.println("Row Value: "+ str_v + ", Key: "+ str_k);
+				if(str_v == null)
+					return false;
+			}
+		}
+		
+		else if (lable == 2) {
+			for(int i = min; i <= max; i++) {
+				str_k = set + "_" + i;
+				str_v = hmFilledCells.get(str_k);
+				System.out.println("Column Value: "+ str_v + ", Key: "+ str_k);
+				if(str_v == null)
+					return false;
+			}
+		}
+		
+		else {
+			str_k = min + "_" + max;
+			str_v = hmFilledCells.get(str_k);
+			System.out.println("Column Value: "+ str_v + ", Key: "+ str_k);
+			if(str_v == null)
+				return false;
+		}
+		return true;
+	}
+	
+	public void sendWord() {									// Sending word for table update
 		int rowMax = table.getSelectionModel().getMaxSelectionIndex();
 		int rowMin = table.getSelectionModel().getMinSelectionIndex();
 		int columnMax = table.getColumnModel().getSelectionModel().getMaxSelectionIndex();
 		int columnMin = table.getColumnModel().getSelectionModel().getMinSelectionIndex();
-		wordString=new StringBuffer();
+		
+		boolean check;
+		
+		
+		wordString = new StringBuffer();
+		
 		int flag=0;
 		int rowDiff = rowMax-rowMin;
         int columnDiff = columnMax-columnMin; 
-        HashMap<Integer, String> word=new HashMap<>();
-        if(rowDiff > 0) {
+        
+        HashMap<Integer, String> word = new HashMap<>();
+        
+        if(rowDiff > 0) {											//Its a vertical word
+        	
+        	check = checkIfNewWord(rowMin, rowMax, columnMin, 1);
+        	
+    		if (check == true) {
+    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n*Select only newly formed word!!!", 
+    					"Warning", JOptionPane.WARNING_MESSAGE);
+    			return;
+    		}
+        	
+    		recordTableEntry(rowMin, rowMax, columnMin, 1);			//Calling function to update HashMap
         	c = 0;
         	for(int i=rowMin; i<=rowMax; i++) { 
         		if(table.getValueAt(i, columnMax) == null) {
@@ -672,7 +747,8 @@ public class GameWindow {
         		}
         	}
         	    if(c == 0) {
-        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert", new Insert(word, columnMax, -1, myModel), usrnm);
+        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMax, -1), usrnm );
+
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -683,10 +759,21 @@ public class GameWindow {
         	    }
 
         	   else
-        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+        		   JOptionPane.showMessageDialog(frame,"Row Word selected with Blank Cell!!!", 
+        				   "Warning", JOptionPane.WARNING_MESSAGE);
          }
            
-         else if(columnDiff > 0) {
+         else if(columnDiff > 0) {										//Its a horizontal word
+        	 
+        	 check = checkIfNewWord(columnMin, columnMax, rowMin, 2);
+        	 
+     		 if (check != true) {
+     			 JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n"
+     			 		+ "*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+     			 return;
+     		 }
+        	 
+     		 recordTableEntry(columnMin, columnMax, rowMin, 2);		//Calling function to update HashMap
         	 c = 0;
         	 for(int j=columnMin; j<=columnMax; j++) {
         		 if(table.getValueAt(rowMax, j) == null) {
@@ -699,7 +786,9 @@ public class GameWindow {
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,-1,rowMax, myModel), usrnm );
+
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, -1, rowMax), usrnm );
+
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -709,45 +798,55 @@ public class GameWindow {
 					}      		   
 	         }
 	         else
-	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!",
+	        			 "Warning", JOptionPane.WARNING_MESSAGE);
          }
-        else if(table.getValueAt(rowMin, columnMin) != null) {
-         	//JOptionPane.showMessageDialog(new GameWindow().frame,"One letter word is not allowed!!!", "Warning", JOptionPane.WARNING_MESSAGE);
-        	 word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
-        	 wordString.append((String)table.getValueAt(rowMin, columnMax));
-        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word,columnMin, rowMin, myModel), usrnm );
-  	    	try {
 
-						out.write(gson.toJson(outPacket)+"\n");
-						out.flush();
-						flag=1;
-					} catch (IOException e) {
-						e.printStackTrace();
-					}      		  
+        
+        else if(table.getValueAt(rowMin, columnMin) != null) {	//Its a single letter word
+        	
+        	check = checkIfNewWord(rowMin, columnMin, 0, 0);
+    		if (check == true) {
+    			JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n"
+    					+ "*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
+    			return;
+    		}
+    		
+    		recordTableEntry(rowMin, columnMin, 0, 0);			//Calling function to update HashMap
+
+
+        	word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
+        	wordString.append((String)table.getValueAt(rowMin, columnMax));
+        	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMin, rowMin), usrnm );
+        	
+  	    	try {
+  	    		out.write(gson.toJson(outPacket) + "\n");
+				out.flush();
+				flag=1;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}      		  
          }
          else
            JOptionPane.showMessageDialog(frame,"Blank Cell selected!!!", "Warning", JOptionPane.WARNING_MESSAGE);
         
         
-        if(flag==1) {								// Calling for Vote
-        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the selected word for vote? \n  *Score will be calculated if all votes are passed!", "Vote?", JOptionPane.YES_NO_OPTION,
+        if(flag == 1) {								// Calling for Vote
+        	if (JOptionPane.showConfirmDialog(frame, "Do you want to send the selected word for vote? \n"
+        			+ "*Score will be calculated if all votes are passed!", "Vote?", JOptionPane.YES_NO_OPTION,
         			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
         		callVote(wordString);
         	}
         }
-	}
+	}														// End of Send Word
 	
 	public void updateScore(String username,String word) {
-		for (int i=0;i<4;i++) {
-			if(username.equals(textfield_array.get(i).getText().trim())) {
-				
-				scoreFieldArray.get(i).setText(Integer.toString((Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
-			}
-			
+		for (int i = 0; i < 4; i++) {
+			if(username.equals(textfield_array.get(i).getText().trim()))
+				scoreFieldArray.get(i).setText(Integer.toString(
+						(Integer.parseInt(scoreFieldArray.get(i).getText())+word.length())));
 		}
 	}
-	
-	
 	
 	public void closeGameGUI() {
 		winner();
@@ -784,35 +883,39 @@ public class GameWindow {
 		}
 	}
 
-	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell
+	public void setTableEditable(boolean editable) {   			//Multiple times can be called to enable/disable cell
         for(int row = 0; row < table.getRowCount(); row++){
-            for(int column = 0; column < table.getColumnCount(); column++){
-                //char c = (char) table.getValueAt(row, column);
+            for(int column = 0; column < table.getColumnCount(); column++)
                 ((MyDefaultTableModel) myModel).setCellEditable(row, column, editable);
-            }
         }
     }
 }
 
 @SuppressWarnings("serial")
-class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restriction Of Characters
+class LimitedPlainDocument extends javax.swing.text.PlainDocument {				//Restriction Of Characters
 	  private int maxLen = -1;
 	  /** Creates a new instance of LimitedPlainDocument */     
 	  public LimitedPlainDocument() {}
+	  
 	  public LimitedPlainDocument(int maxLen) { this.maxLen = maxLen; }
-	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
-	    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
-	      java.awt.Toolkit.getDefaultToolkit().beep();
-		  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	      return;
-	    }
-	    else if(!str.matches("[A-Za-z]"))
-	    {
-	    	java.awt.Toolkit.getDefaultToolkit().beep();
-	    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
-	    	return;
-	    }
-	    super.insertString(param, str, attributeSet);
+	  
+	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) 
+			  throws javax.swing.text.BadLocationException {
+		  
+		    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
+		      java.awt.Toolkit.getDefaultToolkit().beep();
+			  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,
+					  "Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		      return;
+		    }
+		    else if(!str.matches("[A-Za-z]"))
+		    {
+		    	java.awt.Toolkit.getDefaultToolkit().beep();
+		    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,
+		    			"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		    	return;
+		    }
+		    super.insertString(param, str, attributeSet);
 	  }
 	}
 	
@@ -823,7 +926,8 @@ class MyListener implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e) {
 			System.out.println("Row First Index: " + e.getFirstIndex() + " " + "Row Last Index: " + e.getLastIndex());
 			if(counter == 0)
-				JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", 
+						"Warning", JOptionPane.WARNING_MESSAGE);
 			counter++;
 	}
 }
