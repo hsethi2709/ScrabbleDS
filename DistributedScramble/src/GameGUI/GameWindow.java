@@ -132,7 +132,8 @@ public class GameWindow {
 		table.setBackground(new Color(100, 149, 237));
 		table.addMouseListener(new MouseAdapter() {
 			});
-
+		
+		
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		table.setCellSelectionEnabled(true);
@@ -151,11 +152,13 @@ public class GameWindow {
 		btnClearTable.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
 				winner();
+				
 				tableInit();				
 			}
 		});
+		
+	
 		btnClearTable.setBounds(630, 480, 134, 24);
 		frame.getContentPane().add(btnClearTable);
 		
@@ -330,6 +333,7 @@ public class GameWindow {
 				addedmouseevent = true;
 					// For setting cells non editable
 				setTableEditable(false);
+
 	            
                 for(int row = 0; row < table.getRowCount();row++)
                 {
@@ -487,16 +491,20 @@ public class GameWindow {
 		score_p3.setText("");
 		score_p4.setText("");
 		
+
 		hmFilledCells.clear();
+
 		
 		jtf = new JTextField();
 	    jtf.setDocument(new LimitedPlainDocument(1));
 	    for (int i = 0; i < table.getColumnCount(); i++)
 	    	table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(jtf));
+
 	}
 	
 	public void startGame() {
 		btnStartGame.setEnabled(false);
+		btnInvite.setEnabled(false);
 	}
 
 	public void updateGwGUI(String[] wait_list)	{												//Updating list in Game Window
@@ -595,6 +603,7 @@ public class GameWindow {
 		}
 	}
 	
+
 	public void updateTable(Packet<Insert> packet) {						//To update the table w.r.t HashMap
 		hmFilledCells = packet.getContent().getCharacter();
 		
@@ -624,7 +633,7 @@ public class GameWindow {
        
 		
 	}
-	
+
 	public void recordTableEntry(int min, int max, int set, int lable) {			// Fill values in Hash Map 
 		
 		String str_v;
@@ -739,6 +748,7 @@ public class GameWindow {
         	}
         	    if(c == 0) {
         	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMax, -1), usrnm );
+
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -776,7 +786,9 @@ public class GameWindow {
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
+
 	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, -1, rowMax), usrnm );
+
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -789,6 +801,7 @@ public class GameWindow {
 	        	 JOptionPane.showMessageDialog(frame,"Column Word selected with Blank Cell!!!",
 	        			 "Warning", JOptionPane.WARNING_MESSAGE);
          }
+
         
         else if(table.getValueAt(rowMin, columnMin) != null) {	//Its a single letter word
         	
@@ -800,6 +813,7 @@ public class GameWindow {
     		}
     		
     		recordTableEntry(rowMin, columnMin, 0, 0);			//Calling function to update HashMap
+
 
         	word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
         	wordString.append((String)table.getValueAt(rowMin, columnMax));

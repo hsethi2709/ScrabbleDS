@@ -208,8 +208,10 @@ public class ListeningThread extends Thread {
             }
         } catch (Exception e) {
             if (flag) {
+            	gw.closeGameGUI();
                 System.out.println("Connection Stream aborts unexpectedly.\n");
                 JOptionPane.showMessageDialog(new JFrame(), "Server has disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+                
                 try {
 					closeSocket();
 				} catch (IOException e1) {
