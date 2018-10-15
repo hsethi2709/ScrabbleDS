@@ -36,6 +36,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -594,25 +595,19 @@ public class GameWindow {
 		}
 	}
 	
-	public void updateTable(Packet<Insert> packet) {
-		HashMap<Integer, String> word=packet.getContent().getCharacter();
-		DefaultTableModel model = (DefaultTableModel)table.getModel();
+	public void updateTable(Packet<Insert> packet) {						//To update the table w.r.t HashMap
+		hmFilledCells = packet.getContent().getCharacter();
 		
-		if (packet.getContent().getColumn() == -1) {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), packet.getContent().getRow(),key);
+		HashMap<String, String> wordToBeUpdated = packet.getContent().getCharacter();
+		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		StringTokenizer stWord; 
+
+			for (String key: wordToBeUpdated.keySet()) {
+				stWord = new StringTokenizer(key, "_");
+				
+				model.setValueAt(wordToBeUpdated.get(key), Integer.parseInt(stWord.nextToken().trim()), 
+						Integer.parseInt(stWord.nextToken().trim()));
 			}
-		}
-		else if(packet.getContent().getRow() == -1) {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), key, packet.getContent().getColumn());
-			}
-		}
-		else {
-			for (Integer key: word.keySet()) {
-				model.setValueAt(word.get(key), packet.getContent().getRow(), packet.getContent().getColumn());
-			}
-		}
 				model.fireTableDataChanged();
 	}
 	
@@ -743,7 +738,7 @@ public class GameWindow {
         		}
         	}
         	    if(c == 0) {
-        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, columnMax, -1), usrnm );
+        	    	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMax, -1), usrnm );
         	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -781,7 +776,7 @@ public class GameWindow {
          		}
         	 }
 	         if(c == 0) {										//Successful selection of correct word
-	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, -1, rowMax), usrnm );
+	        	 Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, -1, rowMax), usrnm );
      	    	try {
 						out.write(gson.toJson(outPacket)+"\n");
 						out.flush();
@@ -808,7 +803,7 @@ public class GameWindow {
 
         	word.put(rowMin, (String)table.getValueAt(rowMin, columnMin));
         	wordString.append((String)table.getValueAt(rowMin, columnMax));
-        	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(word, columnMin, rowMin), usrnm );
+        	Packet<Insert> outPacket=new Packet<Insert>("Insert",new Insert(hmFilledCells, columnMin, rowMin), usrnm );
         	
   	    	try {
   	    		out.write(gson.toJson(outPacket) + "\n");

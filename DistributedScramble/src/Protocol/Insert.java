@@ -4,17 +4,17 @@ import java.util.HashMap;
 
 public class Insert {
 
-    private HashMap<Integer, String>character;
+    private HashMap<String, String>character;
     private int column;
     private int row;
 
-    public Insert(HashMap<Integer,String> character, int y,int z) {
+    public Insert(HashMap<String, String> character, int y,int z) {
         this.character = character;
         this.column = y;
         this.row=z;
     }
 
-    public HashMap<Integer, String> getCharacter() {
+    public HashMap<String, String> getCharacter() {
         return this.character;
     }
 
