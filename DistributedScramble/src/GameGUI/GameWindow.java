@@ -630,7 +630,7 @@ public class GameWindow {
 		
 	}
 	
-	public void recordTableEntry(int min, int max, int set, int lable) {					// Fill values in Hash Map 
+	public void recordTableEntry(int min, int max, int set, int lable) {			// Fill values in Hash Map 
 		
 		String str_v;
 		String str_k;
@@ -668,7 +668,7 @@ public class GameWindow {
 		}
 	}
 	
-	public boolean checkIfNewWord(int min, int max, int set, int lable) {				//To check if selected word is new
+	public boolean checkIfNewWord(int min, int max, int set, int lable) {			//To check if selected word is new
 		String str_k;
 		String str_v;
 		
@@ -874,35 +874,36 @@ public class GameWindow {
 		}
 	}
 
-	public void setTableEditable(boolean editable) {   								//Multiple times can be called to enable/disable cell
+	public void setTableEditable(boolean editable) {   			//Multiple times can be called to enable/disable cell
         for(int row = 0; row < table.getRowCount(); row++){
-            for(int column = 0; column < table.getColumnCount(); column++){
-                //char c = (char) table.getValueAt(row, column);
+            for(int column = 0; column < table.getColumnCount(); column++)
                 ((MyDefaultTableModel) myModel).setCellEditable(row, column, editable);
-            }
         }
     }
 }
 
 @SuppressWarnings("serial")
-class LimitedPlainDocument extends javax.swing.text.PlainDocument {					//Restriction Of Characters
+class LimitedPlainDocument extends javax.swing.text.PlainDocument {				//Restriction Of Characters
 	  private int maxLen = -1;
 	  /** Creates a new instance of LimitedPlainDocument */     
 	  public LimitedPlainDocument() {}
 	  
 	  public LimitedPlainDocument(int maxLen) { this.maxLen = maxLen; }
 	  
-	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) throws javax.swing.text.BadLocationException {
+	  public void insertString(int param, String str, javax.swing.text.AttributeSet attributeSet) 
+			  throws javax.swing.text.BadLocationException {
 		  
 		    if (str != null && maxLen > 0 && this.getLength() + str.length() > maxLen) {
 		      java.awt.Toolkit.getDefaultToolkit().beep();
-			  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
+			  JOptionPane.showMessageDialog(new GameWindow(null, null).frame,
+					  "Only 1 Alphabet at a time!!", "Warning", JOptionPane.WARNING_MESSAGE);
 		      return;
 		    }
 		    else if(!str.matches("[A-Za-z]"))
 		    {
 		    	java.awt.Toolkit.getDefaultToolkit().beep();
-		    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+		    	JOptionPane.showMessageDialog(new GameWindow(null, null).frame,
+		    			"Only Alphabets are allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
 		    	return;
 		    }
 		    super.insertString(param, str, attributeSet);
@@ -916,7 +917,8 @@ class MyListener implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e) {
 			System.out.println("Row First Index: " + e.getFirstIndex() + " " + "Row Last Index: " + e.getLastIndex());
 			if(counter == 0)
-				JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", "Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(new GameWindow(null, null).frame,"Only 1 Entry is allowed!!", 
+						"Warning", JOptionPane.WARNING_MESSAGE);
 			counter++;
 	}
 }
