@@ -205,10 +205,16 @@ public class ListeningThread extends Thread {
 						
 						JOptionPane.showMessageDialog(new JFrame(), "Your word has been rejected ", "Vote Results", JOptionPane.INFORMATION_MESSAGE);
 				}
+				else if(header.equals("Reset")) {
+					Type type=new TypeToken<Packet<Reply>>() {}.getType();
+					Packet<Reply> inPacket = gson.fromJson(str, type);
+					gw.tableInit(inPacket.getUsername());
+				}
             }
         } catch (Exception e) {
             if (flag) {
             	gw.closeGameGUI();
+            	
                 System.out.println("Connection Stream aborts unexpectedly.\n");
                 JOptionPane.showMessageDialog(new JFrame(), "Server has disconnected", "Error", JOptionPane.ERROR_MESSAGE);
                 

@@ -45,6 +45,7 @@ public class WaitListGUI {
 			public void run() {
 				try {
 					frame.setVisible(true);
+					frame.setTitle(username);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -67,7 +68,7 @@ public class WaitListGUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+		frame = new JFrame(username);
 		frame.setBounds(100, 100, 299, 484);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);

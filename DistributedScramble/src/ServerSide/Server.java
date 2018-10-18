@@ -209,12 +209,13 @@ public class Server {
      */
     public synchronized void endGame() {
         System.out.println("GameList Size:" + gameList.size());
-        for (String name : gameList) {
-            ServeClientThread t = threadMap.get(name);
-            System.out.println("Sending End Game Packet to:" + name);
+        for (ServeClientThread t : threadMap.values()) {
+            
+            System.out.println("Sending End Game Packet to:" + t.getName());
             t.send(new Packet<GameList>("EndGame", null, "Server"));
-            System.out.print("Sent End Game Packet to:" + name);
-            waitingList.add(name);
+            System.out.print("Sent End Game Packet to:" + t.getName());
+            if(!waitingList.contains(t.getUsername()))
+            	waitingList.add(t.getUsername());
         }
         updateGameStatus("No");
         broadcastWaitingList();

@@ -151,6 +151,11 @@ public class ServeClientThread extends Thread {
                     	
                     	break;
                     }
+                    case "Reset":{
+                    	Packet<Reply> inPacket2=gson.fromJson(clientJson, new TypeToken<Packet<Reply>>() {}.getType());
+                    	server.broadcast(inPacket2);
+                    	break;
+                    }
                     case "Logout": {
                     	server.logOut(this.username);
                     	break;

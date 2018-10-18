@@ -17,6 +17,7 @@ import Protocol.Reply;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -153,10 +154,17 @@ public class GameWindow {
 		btnClearTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				winner();
-				
-				tableInit();				
+				Packet<Reply> outPacket=new Packet<Reply>("Reset",new Reply(null,true,null),usrnm);
+				try {
+					out.write(gson.toJson(outPacket)+ "\n");
+					out.flush();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
-		});
+								
+			}
+		);
 		
 	
 		btnClearTable.setBounds(630, 480, 134, 24);
@@ -475,12 +483,13 @@ public class GameWindow {
 			JOptionPane.showMessageDialog(frame,"No Winner!!!");
 	}
 	
-	public void tableInit() {
+	public void tableInit(String name) {
+		JOptionPane.showMessageDialog(new JFrame(), "Game has been reset by "+name, "Oops!", JOptionPane.INFORMATION_MESSAGE);
 		myModel = new MyDefaultTableModel(21, 21);				//Calling Class for setting CellEditable Feature
 		table.setModel(myModel);
 		setTableEditable(true);
 		table.setEnabled(true);
-
+			
 		s_p1 = 0;
 		s_p2 = 0;
 		s_p3 = 0;
