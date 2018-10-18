@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -31,6 +32,7 @@ public class ServeClientThread extends Thread {
     private Server server;
     private String username;
     private String gameStarted;
+    private boolean flag;
 
     /**
      * The constructor of ServeClientThread. Takes client socket and server instance as parameters.
@@ -51,6 +53,7 @@ public class ServeClientThread extends Thread {
         gson = new Gson();
         this.server = server;
         gameStarted=game_started;
+        this.flag = false;
     }
 
     public void run() {
@@ -58,11 +61,11 @@ public class ServeClientThread extends Thread {
         try {
             // The thread keeps listening to client and receives packets from client by clientJson object
             while ((clientJson = in.readLine()) != null) {
-                System.out.println("#Received: " + clientJson); // testing code
+                // System.out.println("#Received: " + clientJson); // testing code
                 // when the type of incoming Json file is not clear, convert it by raw type and read its header.
                 Packet<?> inPacket = gson.fromJson(clientJson, Packet.class);
                 String header = inPacket.getHeader();
-                System.out.println("#Header: " + header); // testing code
+                // System.out.println("#Header: " + header); // testing code
                 // condition statements to judge header and take specific actions.
                 switch (header) 
                 {
@@ -128,25 +131,25 @@ public class ServeClientThread extends Thread {
                     }
                     
                     case "Insert": {
-                    	Packet<Insert> insert=gson.fromJson(clientJson, new TypeToken<Packet<Insert>>() {}.getType());
+                    	Packet<Insert> insert = gson.fromJson(clientJson, new TypeToken<Packet<Insert>>() {}.getType());
                     	server.broadcastWord(insert);
                     	server.nextChance(0);
                     	break;
     
                     }
                     case "Vote": {
-                    	Packet<Vote> vote=gson.fromJson(clientJson, new TypeToken<Packet<Vote>>() {}.getType());
-                    	String username=vote.getUsername();
-                    	Boolean result=vote.getContent().isApprove();
-                    	String word=vote.getContent().getWord();
-                    	server.countVote(username,result,word);
-                    	break;
+                    	Packet<Vote> vote = gson.fromJson(clientJson, new TypeToken<Packet<Vote>>() {}.getType());
+                        String username = vote.getUsername();
+                        Boolean result = vote.getContent().isApprove();
+                        String word = vote.getContent().getWord();
+                        server.countVote(username, result, word);
+                        break;
     
                     }
                     case "EndGame": {
                     	
                     	this.gameStarted="No";
-                    	System.out.println("Calling endGame Method");
+                    	// System.out.println("Calling endGame Method");
                     	server.endGame();
                     	
                     	break;
@@ -157,7 +160,13 @@ public class ServeClientThread extends Thread {
                     }
                 }
             }
-        } catch (UnsupportedEncodingException e) {
+        }catch (SocketException e) {
+            if (!flag)
+                System.out.println("Client reset the connection unexpectedly.");
+            else
+                System.out.println("ClientSocket has been closed by server");
+        }  
+        catch (UnsupportedEncodingException e) {
             System.out.println("The Character Encoding is not supported.");
         } catch (IOException e) {
             System.out.println("The client Socket resets unexpectedly.");
@@ -180,6 +189,15 @@ public class ServeClientThread extends Thread {
             out.flush();
         } catch (IOException e) {
             System.out.println("The client Socket resets unexpectedly.");
+        }
+    }
+
+    public void close() {
+        try {
+            this.clientSocket.close();
+            flag = true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
