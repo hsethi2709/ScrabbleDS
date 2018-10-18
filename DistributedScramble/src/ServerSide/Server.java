@@ -208,12 +208,12 @@ public class Server {
      * 
      */
     public synchronized void endGame() {
-        System.out.println("GameList Size:" + gameList.size());
+        // System.out.println("GameList Size:" + gameList.size());
         for (String name : gameList) {
             ServeClientThread t = threadMap.get(name);
-            System.out.println("Sending End Game Packet to:" + name);
+            // System.out.println("Sending End Game Packet to:" + name);
             t.send(new Packet<GameList>("EndGame", null, "Server"));
-            System.out.print("Sent End Game Packet to:" + name);
+            // System.out.print("Sent End Game Packet to:" + name);
             waitingList.add(name);
         }
         updateGameStatus("No");
@@ -230,6 +230,7 @@ public class Server {
     public void logOut(String username) {
         waitingList.remove(username);
         threadMap.get(username).send(new Packet<GameList>("Logout", null, "Server"));
+        threadMap.get(username).close();
         threadMap.remove(username);
         broadcastWaitingList();
     }
@@ -250,36 +251,35 @@ public class Server {
     	for (String name: gameList ) {
     		
     		if(!name.trim().equals(username.trim())) {
-    			System.out.print("CallVote: "+ name +" " +username);
+    			// System.out.print("CallVote: "+ name +" " +username);
         	ServeClientThread t=threadMap.get(name);
             t.send(new Packet<Reply>("Vote", new Reply(username, false, word) ,username));
     		}
     	}
     }
     
-    public void countVote(String username,Boolean result,String word) {
-    	this.voteCount+=1;
-    	System.out.println("Vote Count: "+voteCount);
-    	
-    	if(result==true) 
-    		this.voteResults+=1;
-    	System.out.println("VoteResult "+voteResults);
-    	if(this.voteCount==gameList.size()-1) {
-    		ServeClientThread t=threadMap.get(username);
-    		if(this.voteResults==gameList.size()-1) {
-    			for (ServeClientThread t1: threadMap.values()) {
-    					t1.send(new Packet<Reply>("VoteResult",new Reply(null,true,word),username));
-    			}
-    			//Send Vote Approved Message
-    		}
-    		else {
-    			
-    			t.send(new Packet<Reply>("VoteResult",new Reply(null,false,word),username));
-    			//Send Vote Disapproved Message
-    		}
-    		this.voteCount=0;
-    		this.voteResults=0;
-    	}
+    public void countVote(String username, Boolean result, String word) {
+        this.voteCount += 1;
+        // System.out.println("Vote Count: " + voteCount);
+
+        if (result == true)
+            this.voteResults += 1;
+        // System.out.println("VoteResult " + voteResults);
+        if (this.voteCount == gameList.size() - 1) {
+            ServeClientThread t = threadMap.get(username);
+            if (this.voteResults == gameList.size() - 1) {
+                for (ServeClientThread t1 : threadMap.values()) {
+                    t1.send(new Packet<Reply>("VoteResult", new Reply(null, true, word), username));
+                }
+                // Send Vote Approved Message
+            } else {
+
+                t.send(new Packet<Reply>("VoteResult", new Reply(null, false, word), username));
+                // Send Vote Disapproved Message
+            }
+            this.voteCount = 0;
+            this.voteResults = 0;
+        }
     	
     }
     
