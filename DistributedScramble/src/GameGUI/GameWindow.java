@@ -777,7 +777,7 @@ public class GameWindow {
         	 
         	 check = checkIfNewWord(columnMin, columnMax, rowMin, 2);
         	 
-     		 if (check != true) {
+     		 if (check == true) {
      			 JOptionPane.showMessageDialog(frame,"Old Word selected!!!\n\n"
      			 		+ "*Select only newly formed word!!!", "Warning", JOptionPane.WARNING_MESSAGE);
      			 return;
