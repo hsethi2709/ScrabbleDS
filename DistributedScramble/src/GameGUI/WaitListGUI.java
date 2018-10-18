@@ -167,7 +167,7 @@ public class WaitListGUI {
 		DefaultListModel<String> listPlayer_wl = (DefaultListModel<String>) list_wl.getModel();
 		
 		listPlayer_wl.removeAllElements();
-		System.out.println("Inside GUI: " + wait_list[0]);
+		// System.out.println("Inside GUI: " + wait_list[0]);
 		for(String item:wait_list) {
         	listPlayer_wl.addElement(item);
         }
